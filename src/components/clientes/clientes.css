@@ -1,0 +1,41 @@
+.Main {
+    text-align: center;
+    background: linear-gradient(60deg, rgba(84,58,183,1) 0%, rgba(0,172,193,1) 100%);
+    padding: 10px;
+    color: white;
+}
+  
+.Main-titulo {
+  font-size: 10px;
+}
+
+.Main-header {
+padding: 15px;
+}
+
+.Main-body-clientes {
+min-height: 46.2vh;
+margin-top: 30px;
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+column-gap: 10px;
+row-gap: 20px;
+justify-content: center;
+font-size: calc(10px + 2vmin);
+}
+  
+.item {
+display: flex;
+flex-direction: column;
+align-items: center;
+height: fit-content;
+padding: 1.3px;
+/*background-color: aliceblue;*/
+}
+  
+.item img{
+border-radius: 50%;
+width: 100px;
+height: 100px;
+margin-bottom: 20px;
+}

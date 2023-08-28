@@ -1,0 +1,152 @@
+.Main {
+    text-align: center;
+    background: linear-gradient(60deg, rgba(84,58,183,1) 0%, rgba(0,172,193,1) 100%);
+    padding: 10px;
+    color: white;
+}
+  
+.Main-titulo {
+  font-size: 10px;
+}
+
+.Main-header {
+  padding: 15px;
+}
+
+.Main-header img{
+  border-radius: 50%;
+}
+
+.Btn {
+  width: 130px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(15, 15, 15);
+  border: none;
+  color: white;
+  font-weight: 600;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.103);
+  position: relative;
+  overflow: hidden;
+  transition-duration: .3s;
+}
+  
+.Btn::before {
+    width: 130px;
+    height: 130px;
+    position: absolute;
+    content: "";
+    background-color: white;
+    border-radius: 50%;
+    left: -100%;
+    top: 0;
+    transition-duration: .3s;
+    mix-blend-mode: difference;
+}
+  
+.Btn:hover::before {
+    transition-duration: .3s;
+    transform: translate(100%,-50%);
+    border-radius: 0;
+}
+  
+.Btn:active {
+transform: translate(5px,5px);
+transition-duration: .3s;
+}
+  
+.Main-body {
+  min-height: 46.2vh;
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 10px;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: fit-content;
+  /*background-color: aliceblue;*/
+}
+
+.card img{
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  margin-bottom: 20px;
+}
+
+.card:nth-child(3) {
+  grid-column: span 2;
+  grid-row: 2; 
+  justify-self: center; 
+  /*margin-top: -00px;*/
+}
+
+.custom-dropdown {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.custom-dropdown select {
+  background-color: #1491e3;
+  color: #fff;
+  font-size: 1rem;
+  padding: 0.2em;
+  padding-right: 1.5em; 
+  border: 0;
+  margin: 0;
+  border-radius: 4px;
+  text-indent: 0.01px;
+  text-overflow: '';
+}
+
+.custom-dropdown::before,
+.custom-dropdown::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.custom-dropdown::after {
+  content: "\25BC";
+  height: 1rem;
+  font-size: .525em;
+  line-height: 1;
+  right: 1.2em;
+  top: 55%;
+  margin-top: -.5em;
+}
+
+.custom-dropdown::before {
+  width: 2rem;
+  right: 0;
+  top: 4.5px;
+  bottom: 0;
+  border-radius: 0 3px 3px 0;
+}
+
+.custom-dropdown select[disabled] {
+  color: rgba(0,0,0,.3);
+}
+
+.custom-dropdown select[disabled]::after {
+  color: rgba(0,0,0,.1);
+}
+
+.custom-dropdown::before {
+  background-color: rgba(0,0,0,.15);
+}
+
+.custom-dropdown::after {
+  color: rgba(0,0,0,.4);
+}
