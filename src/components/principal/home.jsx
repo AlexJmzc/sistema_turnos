@@ -1,28 +1,48 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import login from '../../assets/img/login.png';
 import logo from '../../assets/img/Logo.png';
 import ticket from '../../assets/img/ticket.png';
 import './home.css';
 import { useValue } from '../contexto';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Home = () => {
-  //Navegacion
+  //!URL API
+  const apiUrl = 'http://localhost:3014/ServiciosTurnos.svc/ListaSucursales';
+
+  //!Navegacion
   const navigate = useNavigate();
 
-  //Contexto
+  //!Contexto
   const { setSelectedValue } = useValue();
   const [selectedOption, setSelectedOption] = useState('');
 
+  //!Sucursales
+  const [sucursales, setSucursales] = useState([]);
+
+  //!Consumo API Sucursales
+  useEffect(() => {
+    axios.get(apiUrl)
+    .then(response => {
+      setSucursales(response.data);
+    }).catch(error => {
+      console.error("Error fetching data:", error);
+    });
+    console.log(sucursales);
+  }, []);
+
+  //!Metodo para seleccionar sucursal
   const handleSelectChange = (event) => {
     const value = event.target.value;
     setSelectedOption(value);
     setSelectedValue(value);
   };
 
+  //!Redireccionamiento
   const handleRedirect = (event) => {
     const btn = event.target.id;
-    console.log(btn);
+
     if(selectedOption === '') {
       console.log('Seleccione una sucursal');
       alert('Seleccione una sucursal');
@@ -66,8 +86,9 @@ const Home = () => {
             <span className="custom-dropdown">
               <select id='sucursales' className='sucursales' value={selectedOption} onChange={handleSelectChange}>
                 <option value=''>Selecciona una sucursal</option>
-                <option value='1'>SUCURSAL 1</option>
-                <option value='2'>SUCURSAL 2</option>
+                {sucursales.map(item => (
+                    <option value={item.ID_Sucursal}>{item.Nombre}</option>
+                ))}
               </select>
             </span>
           </div>

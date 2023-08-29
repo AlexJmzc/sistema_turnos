@@ -7,6 +7,7 @@ import axios from 'axios';
 
 
 const Login = () => {
+  //URL API
   const apiUrl = 'http://localhost:3014/ServiciosTurnos.svc/Usuario';
 
   //Logeo
@@ -18,19 +19,41 @@ const Login = () => {
 
   //Contexto
   const { selectedValue } = useValue();
+
+  //Navegacion
   const navigate = useNavigate();
 
-  const handleRedirect = () => {
-    navigate('/trabajador');
-  }
+  //Login
   const Logeo = (event) => {
-      e
-      axios.get(apiUrl + "")
-      .then(response => {
-        setUsuarios(response.data);
-      }).catch(error => {
-        console.error("Error fetching data:", error);
-      });
+    event.preventDefault();
+    axios.get(apiUrl + "?nombre=" + nombre + "&clave=" + clave)
+    .then(response => {
+      setUsuario(response.data);
+    }).catch(error => {
+      console.error("Error fetching data:", error);
+    });
+
+    if(usuario) {
+      Redireccion(usuario.ID_Rol);
+    } else {
+      alert('Usuario o contraseña incorrectos');
+    }
+
+  }
+
+  const Redireccion = (rol) => {
+    switch(rol){
+      case 1:
+        navigate('/admin');
+        break;
+
+      case 2:
+        navigate('/trabajador');
+        break;
+
+      default:
+        navigate();
+    }
   }
 
   return (
@@ -41,11 +64,10 @@ const Login = () => {
         </div>
 
         <div className='Main-formulario'>
-            <form action="" className='formulario'>
-                <input type="text" placeholder='Usuario'/>
+            <form className='formulario'>
+                <input type="text" placeholder='Usuario' value={nombre} onChange={(e) => setNombre(e.target.value)}/>
 
-                <input type="password" placeholder='Clave'/>
-
+                <input type="text" placeholder='Clave' value={clave} onChange={(e) => setClave(e.target.value)}/>
                 
                 <button className='Btn' type='submit' onClick={Logeo}>Login</button>
                 
