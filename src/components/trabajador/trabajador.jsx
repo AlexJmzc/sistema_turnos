@@ -47,9 +47,14 @@ const Trabajador = () => {
   }, [tipos]);
 
   const obtenerTipo = (id) => {
+      if(tipos.length > 0) {
         const tConsulta = tipos.filter((item) => item.ID_Tipo_Consulta === id);
       
-        return tConsulta[0].Nombre; 
+        return tConsulta[0].Nombre;
+      } else {
+        return 1;
+      }
+      
   }
 
   return (
