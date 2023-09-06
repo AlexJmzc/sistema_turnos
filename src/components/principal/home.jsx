@@ -29,7 +29,6 @@ const Home = () => {
     }).catch(error => {
       console.error("Error fetching data:", error);
     });
-    console.log(sucursales);
   }, []);
 
   //!Metodo para seleccionar sucursal
@@ -77,8 +76,7 @@ const Home = () => {
           </div>
 
           <div className='card'>
-              <img src={ticket} alt=''></img>
-              
+              <img src={ticket} alt=''></img>  
               <button className='Btn' id='clientes' onClick={handleRedirect}>CLIENTES</button>
           </div>
 

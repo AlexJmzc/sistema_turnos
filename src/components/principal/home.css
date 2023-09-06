@@ -116,37 +116,3 @@ transition-duration: .3s;
   position: absolute;
   pointer-events: none;
 }
-
-.custom-dropdown::after {
-  content: "\25BC";
-  height: 1rem;
-  font-size: .525em;
-  line-height: 1;
-  right: 1.2em;
-  top: 55%;
-  margin-top: -.5em;
-}
-
-.custom-dropdown::before {
-  width: 2rem;
-  right: 0;
-  top: 4.5px;
-  bottom: 0;
-  border-radius: 0 3px 3px 0;
-}
-
-.custom-dropdown select[disabled] {
-  color: rgba(0,0,0,.3);
-}
-
-.custom-dropdown select[disabled]::after {
-  color: rgba(0,0,0,.1);
-}
-
-.custom-dropdown::before {
-  background-color: rgba(0,0,0,.15);
-}
-
-.custom-dropdown::after {
-  color: rgba(0,0,0,.4);
-}
