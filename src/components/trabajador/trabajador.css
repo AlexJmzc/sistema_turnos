@@ -1,0 +1,24 @@
+.Main {
+    height: 100vh;
+}
+
+.btnAtencion {
+    background-color: #F9FAF5;
+    color: #B7BAC3;
+    border: 2px solid #6E77EE;
+    border-radius: 0px;
+    padding: 10px 20px;
+    display: inline-block;
+    font-family: "Lucida Console", Monaco, monospace;
+    font-size: 14px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: inset 0 0 0 0 #6E77EE;
+    -webkit-transition: ease-out 0.4s;
+    -moz-transition: ease-out 0.4s;
+    transition: ease-out 0.4s;
+}
+
+.slide_diagonal:hover {
+    box-shadow: inset 400px 50px 0 0 #6E77EE;
+  }
