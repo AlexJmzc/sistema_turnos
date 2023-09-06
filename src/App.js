@@ -5,6 +5,7 @@ import Home from './components/principal/home';
 import Clientes from './components/clientes/clientes';
 import Admin from './components/admin/admin';
 import Trabajador from './components/trabajador/trabajador';
+import TablaAdminUsuarios from './components/admin/tablas/tablaAdminUsuarios/tablaAdminUsuarios';
 import { ValueProvider } from './components/contexto';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
             <Route path='/clientes' Component={Clientes} />
             <Route path='/admin' Component={Admin}/>
             <Route path='/trabajador' Component={Trabajador}/>
+            <Route path='/tablaAdminUsuarios' Component={TablaAdminUsuarios}/>
         </Routes>
       </ValueProvider>
     </BrowserRouter>
