@@ -15,7 +15,16 @@ const Login = () => {
   const [clave, setClave] = useState('');
 
   //Usuario
-  const [usuario, setUsuario] = useState('');
+  const [usuario, setUsuario] = useState([]);
+
+  const nombreChange = (e) => {
+    setNombre(e.target.value);
+  }
+
+  const claveChange = (e) => {
+    setClave(e.target.value);
+  }
+
 
   //Contexto
   const { selectedValue } = useValue();
@@ -24,21 +33,17 @@ const Login = () => {
   const navigate = useNavigate();
 
   //Login
-  const Logeo = (event) => {
-    event.preventDefault();
-    axios.get(apiUrl + "?nombre=" + nombre + "&clave=" + clave)
-    .then(response => {
-      setUsuario(response.data);
-    }).catch(error => {
-      console.error("Error fetching data:", error);
-    });
+  const Logeo = async () => {
+    const response = await axios.get(apiUrl + "?nombre=" + nombre + "&clave=" + clave);
 
-    if(usuario) {
-      Redireccion(usuario.ID_Rol);
+    const user = response.data;
+
+    if(user.Clave != null) {
+      setUsuario(user);
+      Redireccion(user.ID_Rol);
     } else {
       alert('Usuario o contraseña incorrectos');
     }
-
   }
 
   const Redireccion = (rol) => {
@@ -60,18 +65,18 @@ const Login = () => {
     <div className='Main'>
         <div className="Main-header">
             <img src={logo} alt="" />
-            <h1>{selectedValue}</h1>
+            <h1>LOGIN</h1>
         </div>
 
         <div className='Main-formulario'>
-            <form className='formulario'>
-                <input type="text" placeholder='Usuario' value={nombre} onChange={(e) => setNombre(e.target.value)}/>
+            <div className='formulario'>
+                <input type="text" placeholder='Usuario' onChange={nombreChange}/>
 
-                <input type="text" placeholder='Clave' value={clave} onChange={(e) => setClave(e.target.value)}/>
+                <input type="password" placeholder='Clave' onChange={claveChange}/>
                 
-                <button className='Btn' type='submit' onClick={Logeo}>Login</button>
+                <button className='Btn' onClick={Logeo}>Login</button>
                 
-            </form>
+            </div>
         </div>
     </div>
   )
