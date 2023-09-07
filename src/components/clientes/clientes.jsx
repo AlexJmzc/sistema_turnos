@@ -95,7 +95,7 @@ const Clientes = () => {
         const hora = String(fecha.getHours()).padStart(2, '0'); 
         const minutos = String(fecha.getMinutes()).padStart(2, '0'); 
 
-        const fechaFormateada = `${anio}-${mes}-${dia}-${hora}:${minutos}`;
+        const fechaFormateada = `${anio}-${mes}-${dia} ${hora}:${minutos}`;
 
         let ticket = {
           id_Consulta: idConsulta,
@@ -120,7 +120,6 @@ const Clientes = () => {
 
   const sacarTurno = (e) => {
     let url = apiUrlNuevoTurno + "id_Tipo_Consulta=" + turno.id_Consulta + "&id_Sucursal=" + turno.id_Sucursal + "&fecha=" + turno.fecha + "&numero_turno=" + turno.numeroTurno + "&estado=" + turno.estado;
-    console.log(url);
     axios
     .get(url)
     .then((response) => {
@@ -164,7 +163,7 @@ const Clientes = () => {
           <div className="modal-content">
             <span className="close" on onClick={closeModal}>&times;</span>
             <div className="modal-body">
-                <header>{turno.sucursal}</header>
+                <header>SUCURSAL {turno.sucursal}</header>
                 <p id="">SACAR TURNO PARA {turno.tipo}</p>
                 <p id="">TURNO NÚMERO {turno.numeroTurno}</p>
                 <div className="botones">
