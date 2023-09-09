@@ -40,6 +40,7 @@ const Login = () => {
 
     if(user.Clave != null) {
       setUsuario(user);
+      localStorage.setItem("user", JSON.stringify(user.ID_Usuario));
       Redireccion(user.ID_Rol);
     } else {
       alert('Usuario o contraseña incorrectos');
