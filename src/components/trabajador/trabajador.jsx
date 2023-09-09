@@ -9,12 +9,14 @@ const Trabajador = () => {
   const [estados, setEstados] = useState([]);
   const { selectedValue } = useValue();
   const [sucursal, setSucursal] = useState([]);
+  const [turno, setTurno] = useState({});
 
   const apiUrlTurnos = "http://localhost:3014/ServiciosTurnos.svc/TurnosSucursalEstado?";
   const apiUrlSucursal = "http://localhost:3014/ServiciosTurnos.svc/Sucursal?id=" + selectedValue;
   const apiUrlConsultas = "http://localhost:3014/ServiciosTurnos.svc/ListaTiposConsulta";
   const apiUrlEstados = "http://localhost:3014/ServiciosTurnos.svc/ListaEstados";
   const apiUrlActualizarTurno = "http://localhost:3014/ServiciosTurnos.svc/EliminarTurno?id_Turno=";
+  const apiUrlNuevaAtencion = "http://localhost:3014/ServiciosTurnos.svc/NuevaAtencion?id_Turno=";
   
 
   //TODO: CARGA LOS TURNOS SACADOS EN DICHA SUCURSAL Y CON ESTADO EN ESPERA
@@ -67,8 +69,12 @@ const Trabajador = () => {
 
   const obtenerTipo = (id) => {
       if(tipos.length > 0) {
-        const tConsulta = tipos.filter((item) => item.ID_Tipo_Consulta === id);
-        return tConsulta[0].Nombre;
+        const tConsulta = tipos.filter((item) => item.ID_Tipo_Consulta === id);  
+
+        if(tConsulta[0] != null) {
+          return tConsulta[0].Nombre;
+        }
+
       } else {
         return 1;
       }
@@ -106,12 +112,45 @@ const Trabajador = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
+
+      setTurno(item);
   }
 
   const closeModal = (e) => {
     let modal = document.getElementById("myModal");
 
     modal.style.display = "none";
+  }
+
+  const completarAtencion = (e) => {
+    let observacion = document.getElementById('observaciones').value;
+
+    let fecha = new Date();
+
+    const anio = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0'); 
+    const dia = String(fecha.getDate()).padStart(2, '0'); 
+    const hora = String(fecha.getHours()).padStart(2, '0'); 
+    const minutos = String(fecha.getMinutes()).padStart(2, '0'); 
+
+    const fechaFormateada = `${anio}-${mes}-${dia} ${hora}:${minutos}`;
+
+    const estado = 5;
+
+    let userID = JSON.parse(localStorage.getItem("user"));
+
+    let turnoID = turno.ID_Turno;
+
+    let urlApi = apiUrlNuevaAtencion + turnoID + "&id_Usuario=" + userID + "&fecha=" + fechaFormateada + "&estado=" + estado + "&observacion=" + observacion; 
+
+    axios
+    .get(urlApi)
+    .then((response) => {
+      setSucursal(response.data);
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
+    });
   }
 
   return (
@@ -156,12 +195,13 @@ const Trabajador = () => {
           <div className="modal-content">
             <span className="close" onClick={closeModal}>&times;</span>
             <div className="modal-body">
-                <header>SUCURSAL</header>
-                <p id="">SACAR TURNO PARA</p>
-                <p id="">TURNO NÚMERO</p>
+                <header>SUCURSAL {sucursal.Nombre}</header>
+                <p id="">MOTIVO: {obtenerTipo(turno.ID_Tipo_Consulta)}</p>
+                <p id="">TURNO NÚMERO {turno.Numero_Turno}</p>
+                <input type="text" className='observaciones' id='observaciones' placeholder='Ingrese las observaciones' />
                 <div className="botones">
                   <button className="btnCancelar" onClick={closeModal}>CANCELAR</button>
-                  <button className="btnAceptar" >ACEPTAR</button>
+                  <button className="btnAceptar" onClick={completarAtencion}>ACEPTAR</button>
                 </div>
             </div>
           </div>
