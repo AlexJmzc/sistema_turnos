@@ -10,22 +10,24 @@ const Trabajador = () => {
   const { selectedValue } = useValue();
   const [sucursal, setSucursal] = useState([]);
 
-  const apiUrlTurnos = "http://localhost:3014/ServiciosTurnos.svc/TurnosIDSucursal?id=";
+  const apiUrlTurnos = "http://localhost:3014/ServiciosTurnos.svc/TurnosSucursalEstado?";
   const apiUrlSucursal = "http://localhost:3014/ServiciosTurnos.svc/Sucursal?id=" + selectedValue;
   const apiUrlConsultas = "http://localhost:3014/ServiciosTurnos.svc/ListaTiposConsulta";
   const apiUrlEstados = "http://localhost:3014/ServiciosTurnos.svc/ListaEstados";
+  const apiUrlActualizarTurno = "http://localhost:3014/ServiciosTurnos.svc/EliminarTurno?id_Turno=";
+  
 
-  //TODO: CARGA LOS TURNOS SACADOS EN DICHA SUCURSAL
+  //TODO: CARGA LOS TURNOS SACADOS EN DICHA SUCURSAL Y CON ESTADO EN ESPERA
   useEffect(() => {
     axios
-      .get(apiUrlTurnos + selectedValue)
+      .get(apiUrlTurnos + "id=" + selectedValue + "&idEstado=3")
       .then((response) => {
         setTurnos(response.data);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, [turnos])
+  }, [turnos, selectedValue])
 
   //TODO: CARGA LA SUCURSAL ACTUAL
   useEffect(() => {
@@ -37,7 +39,7 @@ const Trabajador = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, [sucursal]);
+  }, [sucursal, apiUrlSucursal]);
 
   //TODO: CARGA LISTA DE TIPOS DE CONSULTA
   useEffect(() => {
@@ -92,6 +94,26 @@ const Trabajador = () => {
       return horaFormateada;
   }
 
+  const atender = (item) => {
+    let modal = document.getElementById("myModal");
+    modal.style.display = "block";
+
+    axios
+      .get(apiUrlActualizarTurno + item.ID_Turno + "&estado=4")
+      .then((response) => {
+        setEstados(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }
+
+  const closeModal = (e) => {
+    let modal = document.getElementById("myModal");
+
+    modal.style.display = "none";
+  }
+
   return (
     <div className="Main">
         <div className="Main-titulo">
@@ -111,7 +133,7 @@ const Trabajador = () => {
                 </tr>
             </thead>
             <tbody>
-                {turnos.map((item) => (
+                {turnos.map((item, index) => (
                     <tr>
                         <td>{item.ID_Turno}</td>
                         <td>{sucursal.Nombre}</td>
@@ -120,12 +142,30 @@ const Trabajador = () => {
                         <td>{obtenerEstado(item.Estado)}</td>
                         <td>{obtenerHora(item.Fecha)}</td>
                         <td>
-                            <button className='btnAtencion slide_diagonal'>ATENDER</button>
+                            {index === 0 ? (
+                              <button className='btnAtencion slide_diagonal' onClick={() => atender(item)}>ATENDER</button>
+                            ) : null}
+                            
                         </td>
                     </tr>
                 ))}
             </tbody>
         </table>
+
+        <div id="myModal" className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={closeModal}>&times;</span>
+            <div className="modal-body">
+                <header>SUCURSAL</header>
+                <p id="">SACAR TURNO PARA</p>
+                <p id="">TURNO NÚMERO</p>
+                <div className="botones">
+                  <button className="btnCancelar" onClick={closeModal}>CANCELAR</button>
+                  <button className="btnAceptar" >ACEPTAR</button>
+                </div>
+            </div>
+          </div>
+        </div>
     </div>
   )
 }
