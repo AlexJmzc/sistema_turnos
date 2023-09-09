@@ -101,7 +101,7 @@ const Clientes = () => {
           id_Consulta: idConsulta,
           id_Sucursal: selectedValue,
           fecha: fechaFormateada,
-          estado: 1,
+          estado: 3,
           sucursal: sucursal.Nombre,
           tipo: tipoConsulta,
           numeroTurno: numero
