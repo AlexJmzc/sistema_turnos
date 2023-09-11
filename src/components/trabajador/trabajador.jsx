@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import './trabajador.css';
 import { useValue } from "../contexto";
+import { urlSucursales } from '../../api/urls';
 import axios from 'axios';
 
 const Trabajador = () => {
@@ -12,7 +13,7 @@ const Trabajador = () => {
   const [turno, setTurno] = useState({});
 
   const apiUrlTurnos = "http://localhost:3014/ServiciosTurnos.svc/TurnosSucursalEstado?";
-  const apiUrlSucursal = "http://localhost:3014/ServiciosTurnos.svc/Sucursal?id=" + selectedValue;
+  const apiUrlSucursal = urlSucursales.obtenerSucursal + selectedValue;
   const apiUrlConsultas = "http://localhost:3014/ServiciosTurnos.svc/ListaTiposConsulta";
   const apiUrlEstados = "http://localhost:3014/ServiciosTurnos.svc/ListaEstados";
   const apiUrlActualizarTurno = "http://localhost:3014/ServiciosTurnos.svc/EliminarTurno?id_Turno=";
@@ -117,6 +118,15 @@ const Trabajador = () => {
   }
 
   const closeModal = (e) => {
+    axios
+      .get(apiUrlActualizarTurno + turno.ID_Turno + "&estado=3")
+      .then((response) => {
+        setEstados(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+
     let modal = document.getElementById("myModal");
 
     modal.style.display = "none";
@@ -151,6 +161,33 @@ const Trabajador = () => {
     .catch((error) => {
       console.error("Error fetching data:", error);
     });
+
+    let modal = document.getElementById("myModal");
+
+    modal.style.display = "none";
+  }
+
+  const validarTexto = (textArea) => {
+    const maxLength = 200;
+
+    console.log(textArea)
+
+  
+
+    if(textArea === undefined) {
+      
+    } else {
+      console.log('holña')
+      const caracteresRestantes = maxLength - textArea.value.length;
+      const contador = document.getElementById('caracteres_restantes');
+  
+      contador.textContent = caracteresRestantes + " caracteres restantes";
+  
+      if (caracteresRestantes < 0) {
+          textArea.value = textArea.value.slice(0, maxLength);
+          contador.textContent = "Límite de caracteres alcanzado";
+      }
+    }
   }
 
   return (
@@ -198,7 +235,8 @@ const Trabajador = () => {
                 <header>SUCURSAL {sucursal.Nombre}</header>
                 <p id="">MOTIVO: {obtenerTipo(turno.ID_Tipo_Consulta)}</p>
                 <p id="">TURNO NÚMERO {turno.Numero_Turno}</p>
-                <input type="text" className='observaciones' id='observaciones' placeholder='Ingrese las observaciones' />
+                <textarea type="text" rows="4" className='observaciones' id='observaciones' placeholder='Ingrese las observaciones' maxLength='200'/>
+                <br/>
                 <div className="botones">
                   <button className="btnCancelar" onClick={closeModal}>CANCELAR</button>
                   <button className="btnAceptar" onClick={completarAtencion}>ACEPTAR</button>
