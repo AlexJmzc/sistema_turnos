@@ -4,11 +4,12 @@ import './login.css';
 import { useValue } from '../contexto';
 import { useNavigate } from 'react-router';
 import axios from 'axios';
+import { urlUsuarios } from '../../api/urls';
 
 
 const Login = () => {
   //URL API
-  const apiUrl = 'http://localhost:3014/ServiciosTurnos.svc/Usuario';
+  const apiUrl = urlUsuarios.login;
 
   //Logeo
   const [nombre, setNombre] = useState('');

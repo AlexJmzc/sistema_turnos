@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import "./clientes.css";
 import { useValue } from "../contexto";
 import login from "../../assets/img/Logo.png";
+import { urlSucursales } from "../../api/urls";
 import axios from "axios";
 
 const Clientes = () => {
-  let contadores = JSON.parse(localStorage.getItem("contadores")) || {};
   const { selectedValue } = useValue();
   const [tipos, setTipos] = useState([""]);
   const [turno , setTurno] = useState({});
@@ -13,8 +13,11 @@ const Clientes = () => {
 
   //!URL API
   const apiUrlConsultas = "http://localhost:3014/ServiciosTurnos.svc/ListaTiposConsulta";
-  const apiUrlSucursal = "http://localhost:3014/ServiciosTurnos.svc/Sucursal?id=" + selectedValue;
+  const apiUrlSucursal = urlSucursales.obtenerSucursal + selectedValue;
   const apiUrlNuevoTurno = "http://localhost:3014/ServiciosTurnos.svc/NuevoTurno?";
+  const apiUrlGetContador = "http://localhost:3014/ServiciosTurnos.svc/Contador?id_Sucursal=";
+  const apiUrlNuevoContador = "http://localhost:3014/ServiciosTurnos.svc/NuevoContador?id_Sucursal=";
+  const apiUrlActualizarContador = "http://localhost:3014/ServiciosTurnos.svc/ActualizarContador?id_Sucursal=";
 
   useEffect(() => {
     axios
@@ -36,32 +39,40 @@ const Clientes = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, [sucursal]);
+  }, [sucursal, apiUrlSucursal]);
 
-  function incrementarContador(nombreContador) {
-    if (!contadores[nombreContador]) {
-      contadores[nombreContador] = 1;
-    } else {
-      contadores[nombreContador]++;
-    }
-    localStorage.setItem("contadores", JSON.stringify(contadores));
+
+  //TODO: INCREMENTAR CONTADOR
+  function incrementarContador(id_Consulta, id_Sucursal, numero) {
+    let nuevoNumero = numero + 1;
+      axios
+      .get(apiUrlActualizarContador + id_Sucursal + "&id_Tipo_Consulta=" + id_Consulta + "&numero=" + nuevoNumero)
+      .then((response) => {
+          console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
   }
 
-  function getContador(nombreContador) {
-    if (!contadores[nombreContador]) {
-      contadores[nombreContador] = 1;
-      localStorage.setItem("contadores", JSON.stringify(contadores));
-    }
-    
-    let n = JSON.parse(localStorage.getItem("contadores"))[nombreContador];
-    return n;
-  }
 
-  function reiniciarTodosLosContadores() {
-    for (const nombreContador in contadores) {
-      contadores[nombreContador] = 1;
+  //TODO: GET CONTADOR
+  async function getContador(id_Consulta, id_Sucursal) {
+    let contador = {};
+  
+    try {
+      const response = await axios.get(apiUrlGetContador + id_Sucursal + "&id_Consulta=" + id_Consulta);
+      contador = response.data;
+  
+      if (contador.ID_Sucursal === 0) {
+        const nuevoContadorResponse = await axios.get(apiUrlNuevoContador + id_Sucursal + "&id_Tipo_Consulta=" + id_Consulta + "&numero=1");
+        contador = nuevoContadorResponse.data;
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
-    localStorage.setItem("contadores", JSON.stringify(contadores));
+  
+    return contador;
   }
 
 
@@ -79,37 +90,43 @@ const Clientes = () => {
       }
     }
 
-    let n = getContador(tipoConsulta);
+    getContador(idConsulta, sucursal.ID_Sucursal)
+      .then((contador) => {
+        let n = contador.Numero;
 
-    let numero = tipoConsulta.substring(0,2) + n;
+        let numero = tipoConsulta.substring(0,2) + n;
 
-    let modal = document.getElementById("myModal");
+        let modal = document.getElementById("myModal");
 
-    if(sucursal != null) {
-        //!FECHA
-        let fecha = new Date();
+        if(sucursal != null) {
+          //!FECHA
+          let fecha = new Date();
 
-        const anio = fecha.getFullYear();
-        const mes = String(fecha.getMonth() + 1).padStart(2, '0'); 
-        const dia = String(fecha.getDate()).padStart(2, '0'); 
-        const hora = String(fecha.getHours()).padStart(2, '0'); 
-        const minutos = String(fecha.getMinutes()).padStart(2, '0'); 
+          const anio = fecha.getFullYear();
+          const mes = String(fecha.getMonth() + 1).padStart(2, '0'); 
+          const dia = String(fecha.getDate()).padStart(2, '0'); 
+          const hora = String(fecha.getHours()).padStart(2, '0'); 
+          const minutos = String(fecha.getMinutes()).padStart(2, '0'); 
 
-        const fechaFormateada = `${anio}-${mes}-${dia} ${hora}:${minutos}`;
+          const fechaFormateada = `${anio}-${mes}-${dia} ${hora}:${minutos}`;
 
-        let ticket = {
-          id_Consulta: idConsulta,
-          id_Sucursal: selectedValue,
-          fecha: fechaFormateada,
-          estado: 3,
-          sucursal: sucursal.Nombre,
-          tipo: tipoConsulta,
-          numeroTurno: numero
+          let ticket = {
+            id_Consulta: idConsulta,
+            id_Sucursal: selectedValue,
+            fecha: fechaFormateada,
+            estado: 3,
+            sucursal: sucursal.Nombre,
+            tipo: tipoConsulta,
+            num: n,
+            numeroTurno: numero
+          }
+          setTurno(ticket);
+          modal.style.display = "block";
         }
-        setTurno(ticket);
-        modal.style.display = "block";
-      }
-      
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   const closeModal = (e) => {
@@ -123,7 +140,7 @@ const Clientes = () => {
     axios
     .get(url)
     .then((response) => {
-      incrementarContador(turno.tipo);
+      incrementarContador(turno.id_Consulta, turno.id_Sucursal, turno.num);
       alert("Turno generado");
       closeModal();
     })

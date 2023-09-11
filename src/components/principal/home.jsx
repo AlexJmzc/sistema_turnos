@@ -5,11 +5,12 @@ import ticket from '../../assets/img/ticket.png';
 import './home.css';
 import { useValue } from '../contexto';
 import { useNavigate } from 'react-router-dom';
+import { urlSucursales } from '../../api/urls';
 import axios from 'axios';
 
 const Home = () => {
   //!URL API
-  const apiUrl = 'http://localhost:3014/ServiciosTurnos.svc/ListaSucursales';
+  const apiUrl = urlSucursales.obtenerTodasLasSucursales;
 
   //!Navegacion
   const navigate = useNavigate();
