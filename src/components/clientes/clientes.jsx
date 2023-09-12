@@ -6,6 +6,7 @@ import { urlSucursales } from "../../api/urls";
 import axios from "axios";
 
 const Clientes = () => {
+  //? CONSTANTES DE LA VENTANA
   const { selectedValue } = useValue();
   const [tipos, setTipos] = useState([""]);
   const [turno , setTurno] = useState({});
@@ -19,6 +20,7 @@ const Clientes = () => {
   const apiUrlNuevoContador = "http://localhost:3014/ServiciosTurnos.svc/NuevoContador?id_Sucursal=";
   const apiUrlActualizarContador = "http://localhost:3014/ServiciosTurnos.svc/ActualizarContador?id_Sucursal=";
 
+  //! CARGA DE CONSULTAS
   useEffect(() => {
     axios
       .get(apiUrlConsultas)
@@ -30,6 +32,7 @@ const Clientes = () => {
       });
   }, [tipos]);
 
+  //! CARGA DE SUCURSAL
   useEffect(() => {
     axios
       .get(apiUrlSucursal)
@@ -48,7 +51,7 @@ const Clientes = () => {
       axios
       .get(apiUrlActualizarContador + id_Sucursal + "&id_Tipo_Consulta=" + id_Consulta + "&numero=" + nuevoNumero)
       .then((response) => {
-          console.log(response.data);
+          
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -75,7 +78,7 @@ const Clientes = () => {
     return contador;
   }
 
-
+  //TODO: ABRIR MODAL
   const showModal = (e) => {
 
     let idConsulta = e.target.id;
@@ -129,12 +132,14 @@ const Clientes = () => {
       });
   }
 
+  //TODO: CERRAR MODAL
   const closeModal = (e) => {
     let modal = document.getElementById("myModal");
 
     modal.style.display = "none";
   }
 
+  //TODO: SACAR TURNO
   const sacarTurno = (e) => {
     let url = apiUrlNuevoTurno + "id_Tipo_Consulta=" + turno.id_Consulta + "&id_Sucursal=" + turno.id_Sucursal + "&fecha=" + turno.fecha + "&numero_turno=" + turno.numeroTurno + "&estado=" + turno.estado;
     axios
@@ -142,11 +147,30 @@ const Clientes = () => {
     .then((response) => {
       incrementarContador(turno.id_Consulta, turno.id_Sucursal, turno.num);
       alert("Turno generado");
+      //imprimirTicket();
       closeModal();
     })
     .catch((error) => {
       console.error("Error fetching data:", error);
     });
+  }
+
+  //TODO: IMPRESION DE TICKET
+  function imprimirTicket() {
+    const contenidoTicket = `
+                <div style="text-align: center;">
+                    <h1>EP-EMAPA-A</h1>
+                    <p>${turno.sucursal}</p>
+                    <hr>
+                    <p>TURNO:</p>
+                    <ul>
+                        <li>${turno.tipo}</li>
+                        <li>${turno.numeroTurno}</li>
+                    </ul>
+                </div>
+            `;
+
+        //printJS({ printable: contenidoTicket, type: 'html' });
   }
 
   return (
