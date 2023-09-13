@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "./clientes.css";
-import { useValue } from "../contexto";
 import login from "../../assets/img/Logo.png";
 import { urlSucursales } from "../../api/urls";
 import axios from "axios";
 
 const Clientes = () => {
   //? CONSTANTES DE LA VENTANA
-  const { selectedValue } = useValue();
+  const [ selectedValue ] = localStorage.getItem("sucursal");
   const [tipos, setTipos] = useState([""]);
   const [turno , setTurno] = useState({});
   const [sucursal, setSucursal] = useState(null);
