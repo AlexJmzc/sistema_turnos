@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import login from '../../assets/img/login.png';
 import './admin.css';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +11,19 @@ const Admin = () => {
     const redirect = () => {
         navigate('../tablaAdminUsuarios');
     }
+
+    //! COMPROBACIÓN DE TOKEN Y ROL
+    useEffect(() => {
+    const token = localStorage.getItem("token");
+    const rol = localStorage.getItem("rol");
+
+    if(token !== "" && rol === "1") {
+      
+    } else {
+      navigate("./login");
+    }
+
+  }, [])
 
   return (
     <div className="Main">

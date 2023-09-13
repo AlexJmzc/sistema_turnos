@@ -1,17 +1,22 @@
 import React, {useState, useEffect} from 'react';
 import './trabajador.css';
-import { useValue } from "../contexto";
 import { urlSucursales } from '../../api/urls';
 import axios from 'axios';
+import { useNavigate } from 'react-router';
 
 const Trabajador = () => {
+  //? CONSTANTES DE LA VENTANA
   const [turnos, setTurnos] = useState([]);
   const [tipos, setTipos] = useState([]);
   const [estados, setEstados] = useState([]);
-  const { selectedValue } = useValue();
+  const [selectedValue] = localStorage.getItem("sucursal");
   const [sucursal, setSucursal] = useState([]);
   const [turno, setTurno] = useState({});
 
+  //! NAVEGACION
+  const navigate = useNavigate();
+
+  //! URL API
   const apiUrlTurnos = "http://localhost:3014/ServiciosTurnos.svc/TurnosSucursalEstado?";
   const apiUrlSucursal = urlSucursales.obtenerSucursal + selectedValue;
   const apiUrlConsultas = "http://localhost:3014/ServiciosTurnos.svc/ListaTiposConsulta";
@@ -19,8 +24,20 @@ const Trabajador = () => {
   const apiUrlActualizarTurno = "http://localhost:3014/ServiciosTurnos.svc/EliminarTurno?id_Turno=";
   const apiUrlNuevaAtencion = "http://localhost:3014/ServiciosTurnos.svc/NuevaAtencion?id_Turno=";
   
+  //! COMPROBACIÓN DE TOKEN Y ROL
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const rol = localStorage.getItem("rol");
 
-  //TODO: CARGA LOS TURNOS SACADOS EN DICHA SUCURSAL Y CON ESTADO EN ESPERA
+    if(token !== "" && rol === "2") {
+      
+    } else {
+      navigate("./login");
+    }
+
+  }, [])
+
+  //! CARGA LOS TURNOS SACADOS EN DICHA SUCURSAL Y CON ESTADO EN ESPERA
   useEffect(() => {
     axios
       .get(apiUrlTurnos + "id=" + selectedValue + "&idEstado=3")
@@ -32,7 +49,7 @@ const Trabajador = () => {
       });
   }, [turnos, selectedValue])
 
-  //TODO: CARGA LA SUCURSAL ACTUAL
+  //! CARGA LA SUCURSAL ACTUAL
   useEffect(() => {
     axios
       .get(apiUrlSucursal)
@@ -44,7 +61,7 @@ const Trabajador = () => {
       });
   }, [sucursal, apiUrlSucursal]);
 
-  //TODO: CARGA LISTA DE TIPOS DE CONSULTA
+  //! CARGA LISTA DE TIPOS DE CONSULTA
   useEffect(() => {
     axios
       .get(apiUrlConsultas)
@@ -56,7 +73,7 @@ const Trabajador = () => {
       });
   }, [tipos]);
 
-  //TODO: CARGA LISTA DE ESTADOS
+  //! CARGA LISTA DE ESTADOS
   useEffect(() => {
     axios
       .get(apiUrlEstados)
@@ -68,6 +85,7 @@ const Trabajador = () => {
       });
   }, [estados]);
 
+  //TODO: OBTENER TIPO DE CONSULTA
   const obtenerTipo = (id) => {
       if(tipos.length > 0) {
         const tConsulta = tipos.filter((item) => item.ID_Tipo_Consulta === id);  
@@ -81,6 +99,7 @@ const Trabajador = () => {
       }
   }
 
+  //TODO: OBTENER ESTADO DE TURNO
   const obtenerEstado = (id) => {
     if(estados.length > 0) {
       const tEstado = estados.filter((item) => item.ID_Estado === id);
@@ -90,6 +109,7 @@ const Trabajador = () => {
     }
   }
 
+  //TODO: OBTENER LA HORA DEL TURNO
   const obtenerHora = (f) => {
       var timestamp = parseInt(f.match(/\d+/)[0]);
       var fecha = new Date(timestamp);
@@ -101,6 +121,7 @@ const Trabajador = () => {
       return horaFormateada;
   }
 
+  //TODO: ATENDER TURNO
   const atender = (item) => {
     let modal = document.getElementById("myModal");
     modal.style.display = "block";
@@ -117,6 +138,7 @@ const Trabajador = () => {
       setTurno(item);
   }
 
+  //TODO: CERRAR MODAL
   const closeModal = (e) => {
     axios
       .get(apiUrlActualizarTurno + turno.ID_Turno + "&estado=3")
@@ -132,6 +154,7 @@ const Trabajador = () => {
     modal.style.display = "none";
   }
 
+  //TODO: FINALIZAR ATENCION
   const completarAtencion = (e) => {
     let observacion = document.getElementById('observaciones').value;
 
@@ -167,33 +190,20 @@ const Trabajador = () => {
     modal.style.display = "none";
   }
 
-  const validarTexto = (textArea) => {
-    const maxLength = 200;
-
-    console.log(textArea)
-
-  
-
-    if(textArea === undefined) {
-      
-    } else {
-      console.log('holña')
-      const caracteresRestantes = maxLength - textArea.value.length;
-      const contador = document.getElementById('caracteres_restantes');
-  
-      contador.textContent = caracteresRestantes + " caracteres restantes";
-  
-      if (caracteresRestantes < 0) {
-          textArea.value = textArea.value.slice(0, maxLength);
-          contador.textContent = "Límite de caracteres alcanzado";
-      }
-    }
+  //TODO: LOGOUT
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("Sucursal");
+    localStorage.removeItem("rol");
+    localStorage.removeItem("user");
+    navigate("/");
   }
 
   return (
     <div className="Main">
         <div className="Main-titulo">
             <h1>ATENCIÓN DE TURNOS</h1>
+            <button className='btnLogout' onClick={logout}>Cerrar Sesión</button>
         </div>
 
         <table className="styled-table">

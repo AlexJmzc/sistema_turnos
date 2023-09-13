@@ -28,7 +28,7 @@ const Login = () => {
 
 
   //Contexto
-  const { selectedValue } = useValue();
+  const { selectedValue } = localStorage.getItem("sucursal");
 
   //Navegacion
   const navigate = useNavigate();
@@ -42,6 +42,8 @@ const Login = () => {
     if(user.Clave != null) {
       setUsuario(user);
       localStorage.setItem("user", JSON.stringify(user.ID_Usuario));
+      localStorage.setItem("token", JSON.stringify(user.Token));
+      localStorage.setItem("rol", JSON.stringify(user.ID_Rol));
       Redireccion(user.ID_Rol);
     } else {
       alert('Usuario o contraseña incorrectos');
