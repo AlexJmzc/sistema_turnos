@@ -2,6 +2,23 @@
     height: 100vh;
 }
 
+.Main-titulo {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    color: white; 
+    padding: 10px; 
+}
+
+.Main-titulo h1 {
+    margin: 0 auto;
+}
+
+.btnLogout {
+    text-align: center; 
+    padding: 5px 10px; 
+}
+
 .btnAtencion {
     background-color: #F9FAF5;
     color: #B7BAC3;
