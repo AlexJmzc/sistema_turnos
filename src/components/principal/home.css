@@ -3,6 +3,7 @@
     background: linear-gradient(60deg, rgba(84,58,183,1) 0%, rgba(0,172,193,1) 100%);
     padding: 10px;
     color: white;
+    height: 100vh;
 }
   
 .Main-titulo {
@@ -63,7 +64,7 @@ transition-duration: .3s;
   min-height: 46.2vh;
   margin-top: 30px;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   column-gap: 10px;
   justify-content: center;
   font-size: calc(10px + 2vmin);
@@ -74,7 +75,6 @@ transition-duration: .3s;
   flex-direction: column;
   align-items: center;
   height: fit-content;
-  /*background-color: aliceblue;*/
 }
 
 .card img{
@@ -84,11 +84,10 @@ transition-duration: .3s;
   margin-bottom: 20px;
 }
 
-.card:nth-child(3) {
-  grid-column: span 2;
+.card:nth-child(4) {
+  grid-column: span 3;
   grid-row: 2; 
   justify-self: center; 
-  /*margin-top: -00px;*/
 }
 
 .custom-dropdown {

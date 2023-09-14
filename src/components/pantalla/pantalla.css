@@ -1,0 +1,21 @@
+.Main-container {
+    display: flex;
+    width: 100vw;
+    /*background-color: yellowgreen;*/
+}
+
+.Main-izquierda {
+    width: 20%;
+    background-color: violet;
+}
+
+.Main-derecha {
+    display: flex;
+    width: 80%;
+    height: 80vh;
+    justify-content: center;
+}
+
+.atendiendo {
+    margin-top: 50px;
+}
