@@ -5,15 +5,11 @@ import { useNavigate } from 'react-router-dom';
 
 const Admin = () => {
 
-    //!Navegacion
+  //!Navegacion
   const navigate = useNavigate();
 
-    const redirect = () => {
-        navigate('../tablaAdminUsuarios');
-    }
-
-    //! COMPROBACIÓN DE TOKEN Y ROL
-    useEffect(() => {
+  //! COMPROBACIÓN DE TOKEN Y ROL
+  useEffect(() => {
     const token = localStorage.getItem("token");
     const rol = localStorage.getItem("rol");
 
@@ -25,6 +21,47 @@ const Admin = () => {
 
   }, [])
 
+  const redirect = (event) => {
+    const btn = event.target.id;
+
+    switch(btn) {
+        case 'atenciones':
+            navigate('../tablaAdminAtenciones');
+            break;
+
+        case 'usuarios':
+            navigate('../tablaAdminUsuarios');
+            break;
+
+        case 'trabajadores':
+            navigate('../tablaAdminTrabajadores');
+            break;
+
+        case 'sucursales':
+            navigate('../tablaAdminSucursales');
+            break;
+
+        case 'consultas':
+            navigate('../tablaAdminConsultas');
+            break;
+
+        case 'roles':
+            navigate('../tablaAdminRoles');
+            break;
+
+        case 'turnos':
+            navigate('../tablaAdminTurnos');
+            break;
+
+        case 'estados':
+            navigate('../tablaAdminEstados');
+            break;
+
+        default:
+
+    }
+  }
+
   return (
     <div className="Main">
         <div className='Main-titulo'>
@@ -32,6 +69,18 @@ const Admin = () => {
         </div>
 
         <div className="Main-body-admin">
+          <div className='item'>
+              <p>ATENCIONES</p>
+              <img src={login} alt=''></img>
+              <button className='Btn' id='atenciones' onClick={redirect}>VER</button>
+          </div>
+
+          <div className='item'>
+              <p>TURNOS</p>
+              <img src={login} alt=''></img>
+              <button className='Btn' id='turnos'>VER</button>
+          </div>
+
           <div className='item'>
               <p>USUARIOS</p>
               <img src={login} alt=''></img>
@@ -63,21 +112,9 @@ const Admin = () => {
           </div>
 
           <div className='item'>
-              <p>TURNOS</p>
-              <img src={login} alt=''></img>
-              <button className='Btn' id='turnos'>VER</button>
-          </div>
-
-          <div className='item'>
               <p>ESTADOS</p>
               <img src={login} alt=''></img>
               <button className='Btn' id='estados'>VER</button>
-          </div>
-
-          <div className='item'>
-              <p>ATENCIONES</p>
-              <img src={login} alt=''></img>
-              <button className='Btn' id='atenciones'>VER</button>
           </div>
       </div>
     </div>
