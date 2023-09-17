@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import './tablaAdminUsuarios.css';
+import axios from 'axios';
     
 const TablaAdminUsuarios = () => {
-    const apiUrlUsuarios = 'http://localhost:3014/ServiciosTurnos.svc/ListaUsuarios';
+    const apiUrlUsuarios = 'http://localhost:3014/ServiciosTurnos.svc/ListaDatosUsuarios';
+    const apiUrlTrabajadores = 'http://localhost:3014/ServiciosTurnos.svc/ListaTrabajadores';
     const apiUrlEstados = 'http://localhost:3014/ServiciosTurnos.svc/ListaEstados';
     const apiUrlRoles = 'http://localhost:3014/ServiciosTurnos.svc/ListaRoles';
-    const apiTrabajadorID = 'http://localhost:3014/ServiciosTurnos.svc/Trabajador';
 
     const [datosUsuario, setDatosUsuario] = useState(['']);
+    const [trabajadores, setTrabajadores] = useState(['']);
     const [usuarios, setUsuarios] = useState(['']);
     const [estados, setEstados] = useState(['']);
     const [roles, setRoles] = useState(['']);
-    const [busqueda, setBusqueda] = useState(['']);
+
+    //? VARIABLES DE BUSQUEDA
+    const [rol, setRol] = useState(0);
+    const [estado, setEstado] = useState(0);
+    const [cadena, setCadena] = useState('');
 
     const fetchData = async (url, setData) => {
         try {
@@ -24,116 +30,99 @@ const TablaAdminUsuarios = () => {
         }
     };
 
-    const cedulasUsuarios = async() => {
-        const datosUsuarios = [];
-        for(let i = 0; i < usuarios.length; i++){
-            const usu = usuarios[i];
-            const cedula = await obtenerDatosTrabajador(apiTrabajadorID, usu.ID_Trabajador);
-
-            datosUsuarios.push({
-                id_Usuario: usu.ID_Usuario,
-                nombre: usu.Nombre,
-                clave: usu.Clave,
-                cedula: cedula.Cedula,
-                estado: parseInt(usu.Estado),
-                id_Rol: usu.ID_Rol
-            });
-        }
-
-        setDatosUsuario(datosUsuarios);
-        setBusqueda(datosUsuario);
-    }
-
-    async function obtenerDatosTrabajador(url, valor) {
-        try {
-          const response = await fetch(url + '?id=' + valor);
-          const data = await response.json();
-          return data;
-        } catch (error) {
-          console.error('Error al obtener datos');
-          return {};
-        }
-      }
-
+    //! CARGA DE USUARIOS, ESTADOS Y ROLES
     useEffect(() => {
         fetchData(apiUrlUsuarios, setUsuarios);
         fetchData(apiUrlEstados, setEstados);
         fetchData(apiUrlRoles, setRoles);
-        cedulasUsuarios();
-    }, [busqueda]);
+    }, [usuarios, estados, roles]);
 
-    const buscar = () => {
-        let estado = document.getElementById('estados').value;
-        let est = 0, r = 0;
-
-        if(estado > 0) {
-            est = 1;
-        }
-
-        let rol = document.getElementById('roles').value;
+    //! ACTUALIZACIÓN DE DATOS DE BUSQUEDA
+    useEffect(() => {
+        const filtered = usuarios.filter(item => {
+            const matchesRol = rol === 0 || item.ID_Rol === rol;
+            const matchesEstado = estado === 0 || item.Estado === estado;
+            const matchesCadena = cadena === '' || 
+                    item.Nombre.toLowerCase().includes(cadena.toLowerCase()) ||
+                    item.Nombre_Trabajador.toLowerCase().includes(cadena.toLowerCase()) ||
+                    item.Cedula.toLowerCase().includes(cadena.toLowerCase());
+      
+            return matchesRol && matchesEstado && matchesCadena;
+          });
+           
+        setDatosUsuario(filtered);
         
-        if(rol > 0) {
-            r = 1;
-        }
-
-        let cedula = document.getElementById('buscador').value;
-
-        let cadena = est.toString() + r.toString();
         
-        let datosFiltrados = [];
-        switch(cadena) {
-            case '00':
-                if(cedula !== '') {
-                    datosFiltrados = busqueda.filter(item => item.cedula === cedula);
-                    setBusqueda(datosFiltrados);
-                    console.log(datosFiltrados);
+    }, [usuarios, rol, estado, cadena]);
+
+    
+
+     //! CARGA LOS TRABAJADORES
+    useEffect(() => {
+      axios
+        .get(apiUrlTrabajadores)
+        .then((response) => {
+            setTrabajadores(response.data);
+        })
+        .catch((error) => {
+            console.error("Error fetching data:", error);
+        });
+    }, [trabajadores, apiUrlTrabajadores])
+
+    //TODO: OBTENER TRABAJADOR
+    const obtenerTrabajador = (id) => {
+        if(trabajadores.length > 0) {
+        const trabajador = trabajadores.filter((item) => item.ID_Trabajador === id);  
+            if(trabajador[0] != null) {
+                let tr = {
+                    Cedula: trabajador[0].Cedula,
+                    Nombre: trabajador[0].Primer_Nombre + " " + trabajador[0].Segundo_Nombre + " " + trabajador[0].Primer_Apellido + " " + trabajador[0].Segundo_Apellido
                 }
+                return tr;
+            } else {
+            return 1;
+            }
+       }
+    }
 
-                break;
+    //TODO: OBTENER ROL
+    const obtenerRol = (id) => {
+        if(roles.length > 0) {
+        const rol = roles.filter((item) => item.ID_Rol === id);  
+            if(rol[0] != null) {
+                return rol[0].Nombre;
+            } else {
+            return 1;
+            }
+       }
+    }
 
-            case '01':
-                datosFiltrados = busqueda.filter(item => item.id_Rol === parseInt(rol));
+    //TODO: OBTENER ESTADO
+    const obtenerEstado = (id) => {
+        if(estados.length > 0) {
+        const estado = estados.filter((item) => item.ID_Estado === id);  
+            if(estado[0] != null) {
+                return estado[0].Nombre;
+            } else {
+            return 1;
+            }
+       }
+    }
 
-                if(cedula !== '') { 
-                    datosFiltrados = datosFiltrados.filter(item => item.cedula === cedula);
-                }
+    const cambioRol = (e) => {
+        const dato = parseInt(e.target.value);
+        setRol(dato);
+    }
 
-                setBusqueda(datosFiltrados);
-                console.log(datosFiltrados);
+    const cambioEstado = (e) => {
+        const dato = parseFloat(e.target.value);
+        setEstado(dato);
+    }
 
-                break;
-
-            case '10':
-                datosFiltrados = busqueda.filter(item => item.estado === parseInt(estado));
-
-                if(cedula !== '') {
-                    datosFiltrados = datosFiltrados.filter(item => item.cedula === cedula);
-                }
-
-                setBusqueda(datosFiltrados);
-
-                console.log(datosFiltrados);
-
-                break;
-
-            case '11':
-                datosFiltrados = busqueda.filter(item => item.id_Rol === parseInt(rol));
-
-                datosFiltrados = busqueda.filter(item => item.estado === parseInt(estado));
-
-                if(cedula !== '') {
-                    datosFiltrados = datosFiltrados.filter(item => item.cedula === cedula);
-                }
-
-                setBusqueda(datosFiltrados);
-
-                console.log(datosFiltrados);
-                break;
-
-            default:
-
-                break;
-        }
+    const cambioCadena = (e) => {
+        const dato = e.target.value;
+        setCadena(dato);
+        console.log(dato);
     }
 
 
@@ -141,31 +130,29 @@ const TablaAdminUsuarios = () => {
     <div className="Main">
         <h1>Tabla de Administración</h1>
         <div className="Main-buscador">
-            <select className="estados" id="estados">
+            <select className="estados" id="estados" onChange={cambioEstado}>
                 <option value="0">Estado</option>
-                {estados.map((estado) => (
+                {estados.slice(0,2).map((estado) => (
                     <option value={estado.ID_Estado}>{estado.Nombre}</option>
                 ))}
             </select>
 
-            <select className="roles" id="roles">
+            <select className="roles" id="roles" onChange={cambioRol}>
                 <option value="0">Roles</option>
                 {roles.map((rol) => (
                     <option value={rol.ID_Rol}>{rol.Nombre}</option>
                 ))}
             </select>
 
-            <input type="text" className='buscador' id='buscador' placeholder='Buscar'/>
-
-            <button className='buscarButton' id='buscarButton' onClick={buscar}>Buscar</button>
+            <input type="text" className='buscador' id='buscador' placeholder='Buscar' onChange={cambioCadena}/>
         </div>
         <table className="styled-table">
             <thead>
                 <tr>
-                    <th>ID Usuario</th>
                     <th>Nombre</th>
                     <th>Clave</th>
-                    <th>Trabajador</th>
+                    <th>Cedula</th>
+                    <th>Nombre Trabajador</th>
                     <th>Rol</th>
                     <th>Estado</th>
                     <th></th>
@@ -173,14 +160,14 @@ const TablaAdminUsuarios = () => {
                 </tr>
             </thead>
             <tbody>
-                {busqueda.map((item) => (
+            {datosUsuario.map((item) => (
                     <tr>
-                        <td>{item.id_Usuario}</td>
-                        <td>{item.nombre}</td>
-                        <td>{item.clave}</td>
-                        <td>{item.cedula}</td>
-                        <td>{item.id_Rol}</td>
-                        <td>{item.estado}</td>
+                        <td>{item.Nombre}</td>
+                        <td>{item.Clave}</td>
+                        <td>{item.Cedula}</td>
+                        <td>{item.Nombre_Trabajador}</td>
+                        <td>{obtenerRol(item.ID_Rol)}</td>
+                        <td>{obtenerEstado(item.Estado)}</td>
                         <td>
                             <button>Editar</button>
                         </td>

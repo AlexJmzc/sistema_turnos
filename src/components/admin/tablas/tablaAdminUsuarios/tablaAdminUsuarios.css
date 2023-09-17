@@ -17,11 +17,11 @@ thead tr {
 }
 
 th {
-    padding: 12px 50px;
+    padding: 12px 20px;
 }
 
 td {
-    padding: 12px 50px;
+    padding: 12px 0px;
 }
 
 .styled-table tbody tr {
