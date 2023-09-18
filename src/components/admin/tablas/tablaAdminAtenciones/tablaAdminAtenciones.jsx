@@ -1,6 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import * as XLSX from 'xlsx';
 
 const TablaAdminAtenciones = () => {
   const apiUrlAtenciones = 'http://localhost:3014/ServiciosTurnos.svc/ListaDatosAtenciones';
@@ -98,14 +101,11 @@ const TablaAdminAtenciones = () => {
 
       if (match) {
         const timestamp = parseInt(match[1], 10);
-        const timeZoneOffset = parseInt(match[2], 10);
-      
-        const date = new Date(timestamp);
-      
-        date.setMinutes(date.getMinutes() + timeZoneOffset);
-      
-        const fechaFormateada = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
-      
+        const timeZoneOffset = -5 * 60 * 60; 
+  
+        const date = new Date(timestamp + timeZoneOffset);
+  
+        const fechaFormateada = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:00`;
   
         return fechaFormateada;
       
@@ -136,6 +136,39 @@ const TablaAdminAtenciones = () => {
     localStorage.removeItem("user");
     navigate("/");
   }
+
+  //TODO: GENERAR PDF
+  const generatePDF = () => {
+    const datos = datosAtenciones.map(item => [item.Numero_Turno, item.Nombre_Usuario, item.Nombre_Trabajador, obtenerHora(item.Fecha), obtenerSucursal(item.Sucursal)]);
+
+    const doc = new jsPDF();
+    doc.text('Tabla de Atenciones', 10, 10);
+
+    const headers = ['Numero Turno', 'Usuario', 'Trabajador', 'Fecha', 'Sucursal'];
+
+    doc.autoTable({ head: [headers], body: datos });
+
+    doc.save('Reporte_Atenciones.pdf');
+  };
+
+  //TODO: GENERAR EXCEL
+  const generateExcel = () => {
+    const wb = XLSX.utils.book_new();
+    const datos = datosAtenciones.map(item => [item.Numero_Turno, item.Nombre_Usuario, item.Nombre_Trabajador, obtenerHora(item.Fecha), obtenerSucursal(item.Sucursal)]);
+    const headers = ['Numero Turno', 'Usuario', 'Trabajador', 'Fecha', 'Sucursal'];
+
+    const wsData = [headers, ...datos];
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Reporte');
+
+    const wsCols = headers.map((header, index) => ({
+      wch: header.length + 20,
+    }));
+    ws['!cols'] = wsCols;
+
+    XLSX.writeFile(wb, 'Reporte_Atenciones.xlsx');
+  };
 
   return (
     <div className="Main">
@@ -185,6 +218,10 @@ const TablaAdminAtenciones = () => {
                 ))}
             </tbody>
         </table>
+        <div className="reportes">
+            <button onClick={generatePDF}>PDF</button>
+            <button onClick={generateExcel}>EXCEL</button>
+        </div>
     </div>
   )
 }

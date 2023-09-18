@@ -173,7 +173,6 @@ const Trabajador = () => {
 
     const fechaFormateada = `${anio}-${mes}-${dia} ${hora}:${minutos}`;
 
-
     const estado = 5;
 
     let userID = JSON.parse(localStorage.getItem("user"));
@@ -234,7 +233,7 @@ const Trabajador = () => {
         <table className="styled-table">
             <thead>
                 <tr>
-                    <th>ID Turno</th>
+                    <th></th>
                     <th>Sucursal</th>
                     <th>Motivo Consulta</th>
                     <th>Numero de Turno</th>
@@ -246,7 +245,7 @@ const Trabajador = () => {
             <tbody>
                 {turnos.map((item, index) => (
                     <tr>
-                        <td>{item.ID_Turno}</td>
+                        <td>{index + 1}</td>
                         <td>{sucursal.Nombre}</td>
                         <td>{obtenerTipo(item.ID_Tipo_Consulta)}</td>
                         <td>{item.Numero_Turno}</td>
