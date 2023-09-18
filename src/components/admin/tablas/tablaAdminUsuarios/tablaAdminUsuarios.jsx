@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './tablaAdminUsuarios.css';
 import axios from 'axios';
+import { useNavigate } from 'react-router';
     
 const TablaAdminUsuarios = () => {
     const apiUrlUsuarios = 'http://localhost:3014/ServiciosTurnos.svc/ListaDatosUsuarios';
@@ -19,6 +20,9 @@ const TablaAdminUsuarios = () => {
     const [estado, setEstado] = useState(0);
     const [cadena, setCadena] = useState('');
 
+    //! NAVEGACION
+    const navigate = useNavigate();
+
     const fetchData = async (url, setData) => {
         try {
           
@@ -29,6 +33,19 @@ const TablaAdminUsuarios = () => {
           console.error('Error al cargar la API:', error);
         }
     };
+
+    //! COMPROBACIÓN DE TOKEN Y ROL
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        const rol = localStorage.getItem("rol");
+
+        if(token !== "" && rol === "1") {
+        
+        } else {
+        navigate("../login");
+        }
+
+    }, [])
 
     //! CARGA DE USUARIOS, ESTADOS Y ROLES
     useEffect(() => {
@@ -109,26 +126,40 @@ const TablaAdminUsuarios = () => {
        }
     }
 
+    //TODO: CAMBIO DE ESTADO SELECT ROLES
     const cambioRol = (e) => {
         const dato = parseInt(e.target.value);
         setRol(dato);
     }
 
+    //TODO: CAMBIO DE ESTADO SELECT ESTADOS 
     const cambioEstado = (e) => {
         const dato = parseFloat(e.target.value);
         setEstado(dato);
     }
 
+    //TODO: CAMBIO DE ESTADO INPUT CADENA
     const cambioCadena = (e) => {
         const dato = e.target.value;
         setCadena(dato);
-        console.log(dato);
+    }
+
+    //TODO: LOGOUT
+    const logout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("Sucursal");
+        localStorage.removeItem("rol");
+        localStorage.removeItem("user");
+        navigate("/");
     }
 
 
   return (
     <div className="Main">
-        <h1>Tabla de Administración</h1>
+        <div className="Main-titulo">
+            <h1>Tabla de administración de usuarios</h1>
+            <button className='btnLogout' onClick={logout}>Cerrar Sesión</button>
+        </div>
         <div className="Main-buscador">
             <select className="estados" id="estados" onChange={cambioEstado}>
                 <option value="0">Estado</option>

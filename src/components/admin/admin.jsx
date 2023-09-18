@@ -16,7 +16,7 @@ const Admin = () => {
     if(token !== "" && rol === "1") {
       
     } else {
-      navigate("./login");
+      navigate("../login");
     }
 
   }, [])
@@ -62,10 +62,20 @@ const Admin = () => {
     }
   }
 
+  //TODO: LOGOUT
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("Sucursal");
+    localStorage.removeItem("rol");
+    localStorage.removeItem("user");
+    navigate("/");
+  }
+
   return (
     <div className="Main">
         <div className='Main-titulo'>
             <h1>ADMINISTRADOR</h1>
+            <button className='btnLogout' onClick={logout}>Cerrar Sesión</button>
         </div>
 
         <div className="Main-body-admin">
