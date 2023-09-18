@@ -1,8 +1,191 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router';
 
 const TablaAdminAtenciones = () => {
+  const apiUrlAtenciones = 'http://localhost:3014/ServiciosTurnos.svc/ListaDatosAtenciones';
+  const apiUrlSucursales = 'http://localhost:3014/ServiciosTurnos.svc/ListaSucursales';
+
+  const [atenciones, setAtenciones] = useState([]);
+  const [sucursales, setSucursales] = useState([]);
+  const [datosAtenciones, setDatosAtenciones] = useState(['']);
+
+  //? VALORES DE BUSQUEDA
+  const [sucursal, setSucursal] = useState(0);
+  const [cadena, setCadena] = useState('');
+
+  //! NAVEGACION
+  const navigate = useNavigate();
+
+  const fetchData = async (url, setData) => {
+    try {
+      
+      const response = await fetch(url);
+      const data = await response.json();
+      setData(data);
+    } catch (error) {
+      console.error('Error al cargar la API:', error);
+    }
+  };
+
+  //! COMPROBACIÓN DE TOKEN Y ROL
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const rol = localStorage.getItem("rol");
+
+    if(token !== "" && rol === "1") {
+      
+    } else {
+      navigate("../login");
+    }
+
+  }, [])
+
+  //! CARGA DE ATENCIONES, ESTADOS
+  useEffect(() => {
+    fetchData(apiUrlAtenciones, setAtenciones);
+  }, [atenciones]);
+
+  //! CARGA LOS TRABAJADORES
+  useEffect(() => {
+    axios
+      .get(apiUrlSucursales)
+      .then((response) => {
+          setSucursales(response.data);
+      })
+      .catch((error) => {
+          console.error("Error fetching data:", error);
+      });
+  }, [sucursales, apiUrlSucursales]);
+
+  //! ACTUALIZACIÓN DE DATOS DE BUSQUEDA
+  useEffect(() => {
+    const filtered = atenciones.filter(item => {
+        const matchesSucursal = sucursal === 0 || item.Sucursal === sucursal;
+        const matchesCadena = cadena === '' || 
+                item.Nombre_Usuario.toLowerCase().includes(cadena.toLowerCase()) ||
+                item.Nombre_Trabajador.toLowerCase().includes(cadena.toLowerCase()) ||
+                item.Numero_Turno.toLowerCase().includes(cadena.toLowerCase());
+
+        const fecha = obtenerHora(item.Fecha);
+        const matchesFecha = cadena === '' || 
+                fecha.toLowerCase().includes(cadena.toLowerCase());
+
+  
+        return matchesSucursal && (matchesCadena || matchesFecha);
+      });
+       
+    setDatosAtenciones(filtered);
+    
+}, [atenciones, sucursal, cadena]);
+
+  //TODO: OBTENER SUCURSAL
+  const obtenerSucursal = (id) => {
+    if(sucursales.length > 0) {
+    const sucursal = sucursales.filter((item) => item.ID_Sucursal === id);  
+        if(sucursal[0] != null) {
+            return sucursal[0].Nombre;
+        } else {
+        return 1;
+        }
+   }
+  }
+
+  //TODO: OBTENER LA FECHA Y HORA
+  const obtenerHora = (f) => {
+    if(f) {
+      const match = f.match(/\/Date\((\d+)([+-]\d{4})\)\//);
+
+      if (match) {
+        const timestamp = parseInt(match[1], 10);
+        const timeZoneOffset = parseInt(match[2], 10);
+      
+        const date = new Date(timestamp);
+      
+        date.setMinutes(date.getMinutes() + timeZoneOffset);
+      
+        const fechaFormateada = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+      
+  
+        return fechaFormateada;
+      
+      } 
+    } else {
+      return 1;
+    }
+    
+  }
+
+  //TODO: CAMBIO DE ESTADO SELECT ROLES
+  const cambioSucursal = (e) => {
+    const dato = parseInt(e.target.value);
+    setSucursal(dato);
+  }
+
+  //TODO: CAMBIO DE ESTADO SELECT ESTADOS 
+  const cambioCadena = (e) => {
+    const dato = e.target.value;
+    setCadena(dato);
+  }
+
+  //TODO: LOGOUT
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("Sucursal");
+    localStorage.removeItem("rol");
+    localStorage.removeItem("user");
+    navigate("/");
+  }
+
   return (
-    <div>tablaAdminAtenciones</div>
+    <div className="Main">
+        <div className="Main-titulo">
+            <h1>Tabla de administración de atenciones</h1>
+            <button className='btnLogout' onClick={logout}>Cerrar Sesión</button>
+        </div>
+        <div className="Main-buscador">
+            <select className="sucursales" id="sucursales" onChange={cambioSucursal}>
+                <option value="0">Sucursales</option>
+                {sucursales.map((sucursal) => (
+                    <option value={sucursal.ID_Sucursal}>{sucursal.Nombre}</option>
+                ))}
+            </select>
+
+            <input type="text" className='buscador' id='buscador' placeholder='Buscar' onChange={cambioCadena}/>
+        </div>
+        <table className="styled-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Numero Turno</th>
+                    <th>Usuario</th>
+                    <th>Trabajador</th>
+                    <th>Fecha</th>
+                    <th>Sucursal</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            {datosAtenciones.map((item, index) => (
+                    <tr>
+                        <td>{index + 1}</td>
+                        <td>{item.Numero_Turno}</td>
+                        <td>{item.Nombre_Usuario}</td>
+                        <td>{item.Nombre_Trabajador}</td>
+                        <td>{obtenerHora(item.Fecha)}</td>
+                        <td>{obtenerSucursal(item.Sucursal)}</td>
+                        <td>
+                            <button>Ver observación</button>
+                        </td>
+                        <td>
+                            <button>Eliminar</button>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    </div>
   )
 }
 
