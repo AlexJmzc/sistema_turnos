@@ -12,6 +12,7 @@ const Trabajador = () => {
   const [selectedValue] = localStorage.getItem("sucursal");
   const [sucursal, setSucursal] = useState([]);
   const [turno, setTurno] = useState({});
+  const [atencion, setAtencion] = useState({});
 
   //! NAVEGACION
   const navigate = useNavigate();
@@ -158,6 +159,10 @@ const Trabajador = () => {
   const completarAtencion = (e) => {
     let observacion = document.getElementById('observaciones').value;
 
+    if(observacion === '') {
+      observacion = 'Ninguna';
+    }
+
     let fecha = new Date();
 
     const anio = fecha.getFullYear();
@@ -168,27 +173,40 @@ const Trabajador = () => {
 
     const fechaFormateada = `${anio}-${mes}-${dia} ${hora}:${minutos}`;
 
+
     const estado = 5;
 
     let userID = JSON.parse(localStorage.getItem("user"));
 
     let turnoID = turno.ID_Turno;
 
-    let urlApi = apiUrlNuevaAtencion + turnoID + "&id_Usuario=" + userID + "&fecha=" + fechaFormateada + "&estado=" + estado + "&observacion=" + observacion; 
+    let atencion = {
+      id_Turno: turnoID,
+      id_Usuario: userID,
+      fecha: fechaFormateada,
+      estado: estado,
+      observacion: observacion
+    }
 
+    
+    let urlApi = apiUrlNuevaAtencion + atencion.id_Turno + "&id_Usuario=" + atencion.id_Usuario + "&fecha=" + atencion.fecha + "&estado=" + atencion.estado + "&observacion=" + atencion.observacion; 
+    console.log(urlApi);
     axios
     .get(urlApi)
     .then((response) => {
-      setSucursal(response.data);
+      
     })
     .catch((error) => {
       console.error("Error fetching data:", error);
     });
+    
+
 
     let modal = document.getElementById("myModal");
 
     modal.style.display = "none";
   }
+
 
   //TODO: LOGOUT
   const logout = () => {
