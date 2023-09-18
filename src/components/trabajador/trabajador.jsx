@@ -33,7 +33,7 @@ const Trabajador = () => {
     if(token !== "" && rol === "2") {
       
     } else {
-      navigate("./login");
+      navigate("../login");
     }
 
   }, [])
@@ -200,7 +200,14 @@ const Trabajador = () => {
       console.error("Error fetching data:", error);
     });
     
-
+    axios
+    .get(apiUrlActualizarTurno + atencion.id_Turno + "&estado=5")
+    .then((response) => {
+      setEstados(response.data);
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
+    });
 
     let modal = document.getElementById("myModal");
 
