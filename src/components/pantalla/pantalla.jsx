@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import './pantalla.css';
 import video from '../../assets/video/emapa.mp4';
 import axios from 'axios';
+import logo from '../../assets/img/Logo.png';
 
 const Pantalla = () => {
   //? CONSTANTES DE LA VENTANA
@@ -38,26 +39,28 @@ const Pantalla = () => {
 
   return (
     <div className="Main">
+      <div className="Main-titulo">
         <h1>EP-EMAPA-A</h1>
-        <div className="Main-container">
-            <div className="Main-izquierda">
-                <h1>Siguientes:</h1>
-                {turnos.slice(0,5).map((item) => (
-                    <h1>{item.Numero_Turno}</h1>
-                ))}
+      </div> 
+      <div className="Main-container">
+          <div className="Main-izquierda">
+              <h1>Siguientes:</h1>
+              {turnos.slice(0,4).map((item) => (
+                  <h1>{item.Numero_Turno}</h1>
+              ))}
 
-                <h1 className='atendiendo'>Atendiendo:</h1>
-                {turnosAtendiendo.slice(-1).map((item) => (
-                    <h1>{item.Numero_Turno}</h1>
-                ))}
-            </div>
+              <h1 className='atendiendo'>Atendiendo:</h1>
+              {turnosAtendiendo.slice(-1).map((item) => (
+                  <h1>{item.Numero_Turno}</h1>
+              ))}
+          </div>
 
-            <div className="Main-derecha">
-                <video autoPlay loop muted>
-                     <source src={video} type="video/mp4" />
-                </video>
-            </div>
-        </div>
+          <div className="Main-derecha">
+              <video autoPlay loop muted>
+                    <source src={video} type="video/mp4" />
+              </video>
+          </div>
+      </div>
     </div>
   )
 }

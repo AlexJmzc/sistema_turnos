@@ -1,0 +1,48 @@
+.reportes {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    column-gap: 50px;
+}
+
+.reportes button {
+    width: 100px;
+}
+
+.btnPDF {
+    background-color: #6E77EE;
+    color: #ffffff;
+    border: 2px solid #fbfbfb;
+    border-radius: 0px;
+    padding: 10px 20px;
+    display: inline-block;
+    font-family: "Lucida Console", Monaco, monospace;
+    font-size: 14px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: inset 0 0 0 0 #6E77EE;
+    -webkit-transition: ease-out 0.4s;
+    -moz-transition: ease-out 0.4s;
+    transition: ease-out 0.4s;
+}
+
+.btnExcel {
+    background-color: #3aeb16;
+    color: #ffffff;
+    border: 2px solid #fbfbfb;
+    border-radius: 0px;
+    padding: 10px 20px;
+    display: inline-block;
+    font-family: "Lucida Console", Monaco, monospace;
+    font-size: 14px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: inset 0 0 0 0 #6E77EE;
+    -webkit-transition: ease-out 0.4s;
+    -moz-transition: ease-out 0.4s;
+    transition: ease-out 0.4s;
+}
+
+.slide_diagonal:hover {
+    box-shadow: inset 400px 50px 0 0 #1e3364;
+}

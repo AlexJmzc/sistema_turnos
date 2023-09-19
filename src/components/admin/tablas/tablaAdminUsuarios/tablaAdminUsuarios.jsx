@@ -42,7 +42,7 @@ const TablaAdminUsuarios = () => {
         if(token !== "" && rol === "1") {
         
         } else {
-        navigate("../login");
+        navigate("/");
         }
 
     }, [])

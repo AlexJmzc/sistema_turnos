@@ -1,4 +1,4 @@
-import React, { useState }from 'react';
+import React, { useState, useEffect }from 'react';
 import logo from '../../assets/img/Logo.png';
 import './login.css';
 import { useValue } from '../contexto';
@@ -17,6 +17,17 @@ const Login = () => {
 
   //Usuario
   const [usuario, setUsuario] = useState([]);
+
+  useEffect(() => {
+    const sucursal = localStorage.getItem("sucursal");
+
+    if(sucursal !== "" || sucursal !== null) {
+      
+    } else {
+      navigate("/");
+    }
+
+  }, [])
 
   const nombreChange = (e) => {
     setNombre(e.target.value);

@@ -33,7 +33,7 @@ const Trabajador = () => {
     if(token !== "" && rol === "2") {
       
     } else {
-      navigate("../login");
+      navigate("/");
     }
 
   }, [])

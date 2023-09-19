@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
+import './tablaAdminAtenciones.css';
 
 const TablaAdminAtenciones = () => {
   const apiUrlAtenciones = 'http://localhost:3014/ServiciosTurnos.svc/ListaDatosAtenciones';
@@ -39,7 +40,7 @@ const TablaAdminAtenciones = () => {
     if(token !== "" && rol === "1") {
       
     } else {
-      navigate("../login");
+      navigate("/");
     }
 
   }, [])
@@ -219,8 +220,8 @@ const TablaAdminAtenciones = () => {
             </tbody>
         </table>
         <div className="reportes">
-            <button onClick={generatePDF}>PDF</button>
-            <button onClick={generateExcel}>EXCEL</button>
+            <button className='btnPDF slide_diagonal' onClick={generatePDF}>PDF</button>
+            <button className='btnExcel slide_diagonal' onClick={generateExcel}>EXCEL</button>
         </div>
     </div>
   )

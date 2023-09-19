@@ -1,18 +1,26 @@
 .Main-container {
     display: flex;
     width: 100vw;
-    /*background-color: yellowgreen;*/
+    height: fit-content;
+}
+
+.Main-titulo {
+    margin-bottom: 10px;
+}
+
+.Main-titulo h1 {
+    font-size: 30px;
 }
 
 .Main-izquierda {
-    width: 20%;
-    background-color: violet;
+    width: 30%;
+    background-color: #8186d7;
+    border-radius: 5%;
 }
 
 .Main-derecha {
     display: flex;
-    width: 80%;
-    height: 80vh;
+    width: 70%;
     justify-content: center;
 }
 
