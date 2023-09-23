@@ -92,7 +92,7 @@ const TablaAdminAtenciones = () => {
         } else {
         return 1;
         }
-   }
+    }
   }
 
   //TODO: OBTENER LA FECHA Y HORA
@@ -194,7 +194,9 @@ const TablaAdminAtenciones = () => {
                     <th>Numero Turno</th>
                     <th>Usuario</th>
                     <th>Trabajador</th>
-                    <th>Fecha</th>
+                    <th>Fecha Turno</th>
+                    <th>Fecha Inicio</th>
+                    <th>Fecha Fin</th>
                     <th>Sucursal</th>
                     <th></th>
                     <th></th>
@@ -207,7 +209,9 @@ const TablaAdminAtenciones = () => {
                         <td>{item.Numero_Turno}</td>
                         <td>{item.Nombre_Usuario}</td>
                         <td>{item.Nombre_Trabajador}</td>
-                        <td>{obtenerHora(item.Fecha)}</td>
+                        <td>{obtenerHora(item.Fecha_Turno)}</td>
+                        <td>{obtenerHora(item.Fecha_Inicio)}</td>
+                        <td>{obtenerHora(item.Fecha_Final)}</td>
                         <td>{obtenerSucursal(item.Sucursal)}</td>
                         <td>
                             <button>Ver observación</button>
