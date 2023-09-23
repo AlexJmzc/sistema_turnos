@@ -8,12 +8,10 @@ import Trabajador from './components/trabajador/trabajador';
 import TablaAdminUsuarios from './components/admin/tablas/tablaAdminUsuarios/tablaAdminUsuarios';
 import TablaAdminAtenciones from './components/admin/tablas/tablaAdminAtenciones/tablaAdminAtenciones';
 import Pantalla from './components/pantalla/pantalla';
-import { ValueProvider } from './components/contexto';
 
 function App() {
   return (
     <BrowserRouter>
-      <ValueProvider>
         <Routes>
             <Route path="/" Component={Home} />
             <Route path="/login" Component={Login} />
@@ -24,7 +22,6 @@ function App() {
             <Route path='/tablaAdminUsuarios' Component={TablaAdminUsuarios}/>
             <Route path='/tablaAdminAtenciones' Component={TablaAdminAtenciones}/>
         </Routes>
-      </ValueProvider>
     </BrowserRouter>
   );
 }
