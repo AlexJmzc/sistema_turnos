@@ -5,6 +5,11 @@
     column-gap: 50px;
 }
 
+.Main {
+    min-height: 100vh;
+    height: fit-content;
+}
+
 .reportes button {
     width: 100px;
 }
