@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router';
 
 const Trabajador = () => {
   //? CONSTANTES DE LA VENTANA
+  const token = localStorage.getItem('token');
+  const ventanilla = localStorage.getItem('ventanilla');
   const [turnos, setTurnos] = useState([]);
   const [tipos, setTipos] = useState([]);
   const [estados, setEstados] = useState([]);
@@ -13,6 +15,7 @@ const Trabajador = () => {
   const [sucursal, setSucursal] = useState([]);
   const [turno, setTurno] = useState({});
   const [atencion, setAtencion] = useState({});
+  const [fechaInicio, setFecha] = useState();
 
   //! NAVEGACION
   const navigate = useNavigate();
@@ -23,7 +26,9 @@ const Trabajador = () => {
   const apiUrlConsultas = "http://localhost:3014/ServiciosTurnos.svc/ListaTiposConsulta";
   const apiUrlEstados = "http://localhost:3014/ServiciosTurnos.svc/ListaEstados";
   const apiUrlActualizarTurno = "http://localhost:3014/ServiciosTurnos.svc/EliminarTurno?id_Turno=";
-  const apiUrlNuevaAtencion = "http://localhost:3014/ServiciosTurnos.svc/NuevaAtencion?id_Turno=";
+  const apiUrlNuevaAtencion = "http://localhost:3014/ServiciosTurnos.svc/NuevaAtencion";
+  const apiUrlActualizarAtencion = "http://localhost:3014/ServiciosTurnos.svc/ActualizarAtencion";
+  const apiUrlEliminarAtencion = "http://localhost:3014/ServiciosTurnos.svc/EliminarAtencion";
   
   //! COMPROBACIÓN DE TOKEN Y ROL
   useEffect(() => {
@@ -127,6 +132,48 @@ const Trabajador = () => {
     let modal = document.getElementById("myModal");
     modal.style.display = "block";
 
+    let fecha = new Date();
+
+    const anio = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0'); 
+    const dia = String(fecha.getDate()).padStart(2, '0'); 
+    const hora = String(fecha.getHours()).padStart(2, '0'); 
+    const minutos = String(fecha.getMinutes()).padStart(2, '0'); 
+
+    const fechaF = `${anio}-${mes}-${dia} ${hora}:${minutos}`;
+
+    //let ml = fecha.getTime();
+
+    //const fechaFormateada = `\\/Date(${ml})\\/`;
+
+    setFecha(fechaF);
+
+    const estado = 4;
+
+    let userID = JSON.parse(localStorage.getItem("user"));
+
+    let turnoID = item.ID_Turno;
+
+    let atencion = {
+      ID_Usuario: userID,
+      ID_Turno: turnoID,
+      Ventanilla: ventanilla,
+      Estado: estado,
+      Fecha_Inicio: fechaF,
+      Fecha_Final: fechaF,      
+      Observacion: "NINGUNA",
+      Calificacion: "NO CALIFICADO"
+    }
+    
+    axios
+    .get(apiUrlNuevaAtencion + "?id_Turno=" + atencion.ID_Turno + "&id_Usuario=" + atencion.ID_Usuario + "&ventanilla=" + atencion.Ventanilla + "&estado=" + atencion.Estado + "&fecha_Inicio=" + atencion.Fecha_Inicio + "&fecha_Final=" + atencion.Fecha_Final + "&observacion=" + atencion.Observacion + "&calificacion=" + atencion.Calificacion)
+    .then((response) => {
+      
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
+    });
+
     axios
       .get(apiUrlActualizarTurno + item.ID_Turno + "&estado=4")
       .then((response) => {
@@ -136,7 +183,7 @@ const Trabajador = () => {
         console.error("Error fetching data:", error);
       });
 
-      setTurno(item);
+    setTurno(item);
   }
 
   //TODO: CERRAR MODAL
@@ -149,6 +196,15 @@ const Trabajador = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
+
+    axios
+      .get(apiUrlEliminarAtencion + "?id_Turno=" + turno.ID_Turno)
+      .then((response) => {
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+
 
     let modal = document.getElementById("myModal");
 
@@ -173,6 +229,11 @@ const Trabajador = () => {
 
     const fechaFormateada = `${anio}-${mes}-${dia} ${hora}:${minutos}`;
 
+
+    //let ml = fecha.getTime();
+
+    //const fechaFormateada = `\\/Date(${ml})\\/`;
+
     const estado = 5;
 
     let userID = JSON.parse(localStorage.getItem("user"));
@@ -180,18 +241,18 @@ const Trabajador = () => {
     let turnoID = turno.ID_Turno;
 
     let atencion = {
-      id_Turno: turnoID,
-      id_Usuario: userID,
-      fecha: fechaFormateada,
-      estado: estado,
-      observacion: observacion
+      ID_Usuario: userID,
+      ID_Turno: turnoID,
+      Ventanilla: ventanilla,
+      Estado: estado,
+      Fecha_Inicio: fechaInicio,
+      Fecha_Final: fechaFormateada,      
+      Observacion: observacion,
+      Calificacion: "NO CALIFICADO"
     }
-
     
-    let urlApi = apiUrlNuevaAtencion + atencion.id_Turno + "&id_Usuario=" + atencion.id_Usuario + "&fecha=" + atencion.fecha + "&estado=" + atencion.estado + "&observacion=" + atencion.observacion; 
-    console.log(urlApi);
     axios
-    .get(urlApi)
+    .get(apiUrlActualizarAtencion + "?id_Turno=" + atencion.ID_Turno + "&id_Usuario=" + atencion.ID_Usuario + "&ventanilla=" + atencion.Ventanilla + "&estado=" + atencion.Estado + "&fecha_Inicio=" + atencion.Fecha_Inicio + "&fecha_Final=" + atencion.Fecha_Final + "&observacion=" + atencion.Observacion + "&calificacion=" + atencion.Calificacion)
     .then((response) => {
       
     })
