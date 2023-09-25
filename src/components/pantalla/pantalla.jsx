@@ -72,7 +72,7 @@ const Pantalla = () => {
   
   function reproducirSonido(texto) {
     try {
-      const textoCompleto = "TURNO TURNO " + texto;
+      const textoCompleto = "ATENCION TURNO " + texto;
       const mensaje = new SpeechSynthesisUtterance((textoCompleto));     
     
       synthesis.speak(mensaje);

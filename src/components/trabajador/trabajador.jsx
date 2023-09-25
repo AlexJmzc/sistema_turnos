@@ -14,7 +14,6 @@ const Trabajador = () => {
   const [selectedValue] = localStorage.getItem("sucursal");
   const [sucursal, setSucursal] = useState([]);
   const [turno, setTurno] = useState({});
-  const [atencion, setAtencion] = useState({});
   const [fechaInicio, setFecha] = useState();
 
   //! NAVEGACION
