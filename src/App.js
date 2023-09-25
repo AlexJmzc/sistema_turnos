@@ -8,6 +8,7 @@ import Trabajador from './components/trabajador/trabajador';
 import TablaAdminUsuarios from './components/admin/tablas/tablaAdminUsuarios/tablaAdminUsuarios';
 import TablaAdminAtenciones from './components/admin/tablas/tablaAdminAtenciones/tablaAdminAtenciones';
 import Pantalla from './components/pantalla/pantalla';
+import Calificacion from './components/calificacion/calificacion';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path='/admin' Component={Admin}/>
             <Route path='/trabajador' Component={Trabajador}/>
             <Route path='/pantalla' Component={Pantalla}/>
+            <Route path='/calificacion' Component={Calificacion}/>
             <Route path='/tablaAdminUsuarios' Component={TablaAdminUsuarios}/>
             <Route path='/tablaAdminAtenciones' Component={TablaAdminAtenciones}/>
         </Routes>

@@ -1,0 +1,137 @@
+.modalCal {
+    display: block;
+    position: fixed; 
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgb(0,0,0); 
+    background-color: rgba(0,0,0,0.4); 
+}
+
+.modal-content {
+    background-color: #fefefe;
+    color: black;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.Main-body-cal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+}
+
+.Main-body-cal button {
+    width: 200px;
+    color:#fff;
+    border:none;
+    position:relative;
+    height:40px;
+    font-size:15px;
+    padding:0 2em;
+    cursor:pointer;
+    transition:800ms ease all;
+    outline:none;
+  }
+  
+  .btnBuena {
+    background:#1AAB8A;
+  }
+
+  .btnRegular {
+    background:#cadf0d;
+  }
+  
+  .btnMala {
+    background: #ca1a29;
+  }
+  
+  .btnBuena:hover{
+    background:#fff;
+    color:#1AAB8A;
+  }
+
+  .btnRegular:hover{
+    background:#fff;
+    color:#cadf0d;
+  }
+  
+  .btnMala:hover{
+    background:#fff;
+    color:#ca1a29;
+  }
+  
+  .btnBuena:before,.btnBuena:after{
+    content:'';
+    position:absolute;
+    top:0;
+    right:0;
+    height:2px;
+    width:0;
+    background: #1AAB8A;
+    transition:400ms ease all;
+  }
+
+  .btnRegular:before,.btnRegular:after{
+    content:'';
+    position:absolute;
+    top:0;
+    right:0;
+    height:2px;
+    width:0;
+    background: #cadf0d;
+    transition:400ms ease all;
+  }
+  
+  .btnMala:before,.btnMala:after{
+    content:'';
+    position:absolute;
+    top:0;
+    right:0;
+    height:2px;
+    width:0;
+    background: #ca1a29;
+    transition:400ms ease all;
+  }
+  
+  .btnBuena:after{
+    right:inherit;
+    top:inherit;
+    left:0;
+    bottom:0;
+  }
+
+  .btnRegular:after{
+    right:inherit;
+    top:inherit;
+    left:0;
+    bottom:0;
+  }
+  
+  .btnMala:after{
+    right:inherit;
+    top:inherit;
+    left:0;
+    bottom:0;
+  }
+  
+  .btnBuena:hover:before,.btnBuena:hover:after{
+    width:100%;
+    transition:800ms ease all;
+  }
+
+  .btnRegular:hover:before,.btnRegular:hover:after{
+    width:100%;
+    transition:800ms ease all;
+  }
+  
+  .btnMala:hover:before,.btnMala:hover:after{
+    width:100%;
+    transition:800ms ease all;
+  }
