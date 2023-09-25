@@ -10,6 +10,48 @@
     height: fit-content;
 }
 
+.btnObservacion {
+    width: 150px;
+    color:#fff;
+    border:none;
+    position:relative;
+    height:40px;
+    font-size:15px;
+    padding:0 2em;
+    cursor:pointer;
+    transition:800ms ease all;
+    outline:none;
+    background-color: #cadf0d;
+}
+
+.btnObservacion:hover{
+    background:#fff;
+    color:#cadf0d;
+}
+
+.btnObservacion:before,.btnObservacion:after{
+    content:'';
+    position:absolute;
+    top:0;
+    right:0;
+    height:2px;
+    width:0;
+    background: #cadf0d;
+    transition:400ms ease all;
+}
+
+.btnObservacion:after{
+    right:inherit;
+    top:inherit;
+    left:0;
+    bottom:0;
+}
+
+.btnObservacion:hover:before,.btnObservacion:hover:after{
+    width:100%;
+    transition:800ms ease all;
+}
+  
 .reportes button {
     width: 100px;
 }

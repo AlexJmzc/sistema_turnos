@@ -13,6 +13,7 @@ const TablaAdminAtenciones = () => {
   const [atenciones, setAtenciones] = useState([]);
   const [sucursales, setSucursales] = useState([]);
   const [datosAtenciones, setDatosAtenciones] = useState(['']);
+  const [atencion, setAtencion] = useState({});
 
   //? VALORES DE BUSQUEDA
   const [sucursal, setSucursal] = useState(0);
@@ -140,12 +141,12 @@ const TablaAdminAtenciones = () => {
 
   //TODO: GENERAR PDF
   const generatePDF = () => {
-    const datos = datosAtenciones.map(item => [item.Numero_Turno, item.Nombre_Usuario, item.Nombre_Trabajador, obtenerHora(item.Fecha), obtenerSucursal(item.Sucursal)]);
+    const datos = datosAtenciones.map(item => [item.Numero_Turno, item.Nombre_Usuario, item.Nombre_Trabajador, obtenerHora(item.Fecha_Turno), obtenerHora(item.Fecha_Inicio), obtenerHora(item.Fecha_Final), obtenerSucursal(item.Sucursal), item.Calificacion, item.Observacion]);
 
     const doc = new jsPDF();
     doc.text('Tabla de Atenciones', 10, 10);
 
-    const headers = ['Numero Turno', 'Usuario', 'Trabajador', 'Fecha', 'Sucursal'];
+    const headers = ['Numero Turno', 'Usuario', 'Trabajador', 'Fecha Turno', 'Fecha Inicio', 'Fecha Final', 'Sucursal', 'Calificacion', 'Observacion'];
 
     doc.autoTable({ head: [headers], body: datos });
 
@@ -155,8 +156,8 @@ const TablaAdminAtenciones = () => {
   //TODO: GENERAR EXCEL
   const generateExcel = () => {
     const wb = XLSX.utils.book_new();
-    const datos = datosAtenciones.map(item => [item.Numero_Turno, item.Nombre_Usuario, item.Nombre_Trabajador, obtenerHora(item.Fecha), obtenerSucursal(item.Sucursal)]);
-    const headers = ['Numero Turno', 'Usuario', 'Trabajador', 'Fecha', 'Sucursal'];
+    const datos = datosAtenciones.map(item => [item.Numero_Turno, item.Nombre_Usuario, item.Nombre_Trabajador, obtenerHora(item.Fecha_Turno), obtenerHora(item.Fecha_Inicio), obtenerHora(item.Fecha_Final), obtenerSucursal(item.Sucursal), item.Calificacion, item.Observacion]);
+    const headers = ['Numero Turno', 'Usuario', 'Trabajador', 'Fecha Turno', 'Fecha Inicio', 'Fecha Final', 'Sucursal', 'Calificacion', 'Observacion'];
 
     const wsData = [headers, ...datos];
     const ws = XLSX.utils.aoa_to_sheet(wsData);
@@ -170,6 +171,19 @@ const TablaAdminAtenciones = () => {
 
     XLSX.writeFile(wb, 'Reporte_Atenciones.xlsx');
   };
+
+  //TODO: VER OBSERVACION
+  const abrirModal = (item) => {
+    setAtencion(item);
+    let modal = document.getElementById("myModal");
+    modal.style.display = "block";
+  }
+
+   //TODO: CERRAR MODAL
+   const closeModal = () => {
+    let modal = document.getElementById("myModal");
+    modal.style.display = "none";
+   }
 
   return (
     <div className="Main">
@@ -198,7 +212,7 @@ const TablaAdminAtenciones = () => {
                     <th>Fecha Inicio</th>
                     <th>Fecha Fin</th>
                     <th>Sucursal</th>
-                    <th></th>
+                    <th>Calificación</th>
                     <th></th>
                 </tr>
             </thead>
@@ -213,16 +227,24 @@ const TablaAdminAtenciones = () => {
                         <td>{obtenerHora(item.Fecha_Inicio)}</td>
                         <td>{obtenerHora(item.Fecha_Final)}</td>
                         <td>{obtenerSucursal(item.Sucursal)}</td>
+                        <td>{item.Calificacion}</td>
                         <td>
-                            <button>Ver observación</button>
-                        </td>
-                        <td>
-                            <button>Eliminar</button>
+                            <button className='btnObservacion' onClick={() => abrirModal(item)}>Ver observación</button>
                         </td>
                     </tr>
                 ))}
             </tbody>
         </table>
+
+        <div id="myModal" className="modal">
+          <div className="modal-content">
+            <span className="close" on onClick={closeModal}>&times;</span>
+            <div className="modal-body">
+              <h1>Observación: {atencion.Observacion}</h1>
+            </div>
+          </div>
+        </div>
+
         <div className="reportes">
             <button className='btnPDF slide_diagonal' onClick={generatePDF}>PDF</button>
             <button className='btnExcel slide_diagonal' onClick={generateExcel}>EXCEL</button>
