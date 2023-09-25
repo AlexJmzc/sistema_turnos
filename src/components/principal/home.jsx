@@ -30,6 +30,14 @@ const Home = () => {
     });
   }, []);
 
+  //! Limpieza de local storage
+  useEffect(() => {
+    localStorage.removeItem("ventanilla");
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    localStorage.removeItem("rol");
+  }, []);
+
   //!Metodo para seleccionar sucursal
   const handleSelectChange = (event) => {
     const value = event.target.value;
@@ -57,6 +65,10 @@ const Home = () => {
           navigate('pantalla');
           break;
 
+        case 'calificacion':
+          navigate('calificacion');
+          break;
+
         default:
           break;
       }
@@ -75,6 +87,11 @@ const Home = () => {
           <div className='card'>
               <img src={login} alt=''></img>
               <button className='Btn' id='login' onClick={handleRedirect}>LOGIN</button>
+          </div>
+
+          <div className='card'>
+              <img src={ticket} alt=''></img>  
+              <button className='Btn' id='calificacion' onClick={handleRedirect}>PANTALLA CALIFICACIÓN</button>
           </div>
 
           <div className='card'>

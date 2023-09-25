@@ -66,7 +66,7 @@ const Login = () => {
     setClave(e.target.value);
   }
 
-  //!Metodo para seleccionar sucursal
+  //!Metodo para seleccionar ventanilla
   const cambioVentanilla = (event) => {
     const value = event.target.value;
     setVentanilla(value);

@@ -64,7 +64,7 @@ transition-duration: .3s;
   min-height: 46.2vh;
   margin-top: 30px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   column-gap: 10px;
   justify-content: center;
   font-size: calc(10px + 2vmin);
@@ -84,8 +84,8 @@ transition-duration: .3s;
   margin-bottom: 20px;
 }
 
-.card:nth-child(4) {
-  grid-column: span 3;
+.card:nth-child(5) {
+  grid-column: span 4;
   grid-row: 2; 
   justify-self: center; 
 }
