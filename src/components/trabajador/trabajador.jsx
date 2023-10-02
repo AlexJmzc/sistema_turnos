@@ -1,12 +1,20 @@
 import React, {useState, useEffect} from 'react';
 import './trabajador.css';
-import { urlSucursales } from '../../api/urls';
+import { Sucursales, Turnos, Tipos_Consulta, Estados, Atenciones, Calificaciones } from '../../api/urls';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
 
 const Trabajador = () => {
+  //? INSTANCIAS DE LAS CLASES DE LAS APIS
+  const sucursalesAPI = new Sucursales();
+  const turnosAPI = new Turnos();
+  const consultasAPI = new Tipos_Consulta();
+  const estadosAPI = new Estados();
+  const atencionesAPI = new Atenciones();
+  const calificacionesAPI = new Calificaciones();
+
   //? CONSTANTES DE LA VENTANA
-  const token = localStorage.getItem('token');
+  //const token = localStorage.getItem('token');
   const ventanilla = localStorage.getItem('ventanilla');
   const [turnos, setTurnos] = useState([]);
   const [tipos, setTipos] = useState([]);
@@ -15,19 +23,16 @@ const Trabajador = () => {
   const [sucursal, setSucursal] = useState([]);
   const [turno, setTurno] = useState({});
   const [fechaInicio, setFecha] = useState();
+  const [atencionActual, setAtencion] = useState([]);
 
   //! NAVEGACION
   const navigate = useNavigate();
 
   //! URL API
-  const apiUrlTurnos = "http://localhost:3014/ServiciosTurnos.svc/TurnosSucursalEstado?";
-  const apiUrlSucursal = urlSucursales.obtenerSucursal + selectedValue;
-  const apiUrlConsultas = "http://localhost:3014/ServiciosTurnos.svc/ListaTiposConsulta";
-  const apiUrlEstados = "http://localhost:3014/ServiciosTurnos.svc/ListaEstados";
-  const apiUrlActualizarTurno = "http://localhost:3014/ServiciosTurnos.svc/EliminarTurno?id_Turno=";
-  const apiUrlNuevaAtencion = "http://localhost:3014/ServiciosTurnos.svc/NuevaAtencion";
-  const apiUrlActualizarAtencion = "http://localhost:3014/ServiciosTurnos.svc/ActualizarAtencion";
-  const apiUrlEliminarAtencion = "http://localhost:3014/ServiciosTurnos.svc/EliminarAtencion";
+  const apiUrlTurnos = turnosAPI.turnosPorSucursalEstado(selectedValue, 3);
+  const apiUrlSucursal = sucursalesAPI.sucursalPorID(selectedValue);
+  const apiUrlConsultas = consultasAPI.listarTiposConsulta();
+  const apiUrlEstados = estadosAPI.listarEstados();
   
   //! COMPROBACIÓN DE TOKEN Y ROL
   useEffect(() => {
@@ -45,14 +50,14 @@ const Trabajador = () => {
   //! CARGA LOS TURNOS SACADOS EN DICHA SUCURSAL Y CON ESTADO EN ESPERA
   useEffect(() => {
     axios
-      .get(apiUrlTurnos + "id=" + selectedValue + "&idEstado=3")
+      .get(apiUrlTurnos)
       .then((response) => {
         setTurnos(response.data);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, [turnos, selectedValue])
+  }, [turnos, selectedValue, apiUrlTurnos])
 
   //! CARGA LA SUCURSAL ACTUAL
   useEffect(() => {
@@ -76,7 +81,7 @@ const Trabajador = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, [tipos]);
+  }, [tipos, apiUrlConsultas]);
 
   //! CARGA LISTA DE ESTADOS
   useEffect(() => {
@@ -88,7 +93,7 @@ const Trabajador = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, [estados]);
+  }, [estados, apiUrlEstados]);
 
   //TODO: OBTENER TIPO DE CONSULTA
   const obtenerTipo = (id) => {
@@ -160,12 +165,24 @@ const Trabajador = () => {
       Estado: estado,
       Fecha_Inicio: fechaF,
       Fecha_Final: fechaF,      
-      Observacion: "NINGUNA",
-      Calificacion: "NO CALIFICADO"
+      Observacion: "NINGUNA"
     }
-    
+
+    const urlNuevaAtencion = atencionesAPI.crearNuevaAtencionGET(atencion.ID_Turno, atencion.ID_Usuario, atencion.Ventanilla, atencion.Estado, atencion.Fecha_Inicio, atencion.Fecha_Final, atencion.Observacion);
+    let nuevaAtencion = [];
     axios
-    .get(apiUrlNuevaAtencion + "?id_Turno=" + atencion.ID_Turno + "&id_Usuario=" + atencion.ID_Usuario + "&ventanilla=" + atencion.Ventanilla + "&estado=" + atencion.Estado + "&fecha_Inicio=" + atencion.Fecha_Inicio + "&fecha_Final=" + atencion.Fecha_Final + "&observacion=" + atencion.Observacion + "&calificacion=" + atencion.Calificacion)
+    .get(urlNuevaAtencion)
+    .then((response) => {
+        nuevaAtencion = response.data;
+        setAtencion(nuevaAtencion);
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
+    });
+
+    const urlNuevaCalificacion = calificacionesAPI.crearNuevaCalificacion(atencionActual.ID_Atencion, 0, 0, 0, 'NO CALIFICADO');
+    axios
+    .get(urlNuevaCalificacion)
     .then((response) => {
       
     })
@@ -173,8 +190,10 @@ const Trabajador = () => {
       console.error("Error fetching data:", error);
     });
 
+
+    const urlActualizarTurno = turnosAPI.actualizarEstadoTurnoPorID(item.ID_Turno, 4);
     axios
-      .get(apiUrlActualizarTurno + item.ID_Turno + "&estado=4")
+      .get(urlActualizarTurno)
       .then((response) => {
         setEstados(response.data);
       })
@@ -185,37 +204,12 @@ const Trabajador = () => {
     setTurno(item);
   }
 
-  //TODO: CERRAR MODAL
-  const closeModal = (e) => {
-    axios
-      .get(apiUrlActualizarTurno + turno.ID_Turno + "&estado=3")
-      .then((response) => {
-        setEstados(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-
-    axios
-      .get(apiUrlEliminarAtencion + "?id_Turno=" + turno.ID_Turno)
-      .then((response) => {
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-
-
-    let modal = document.getElementById("myModal");
-
-    modal.style.display = "none";
-  }
-
   //TODO: FINALIZAR ATENCION
   const completarAtencion = (e) => {
     let observacion = document.getElementById('observaciones').value;
 
     if(observacion === '') {
-      observacion = 'Ninguna';
+      observacion = 'NINGUNA';
     }
 
     let fecha = new Date();
@@ -240,18 +234,19 @@ const Trabajador = () => {
     let turnoID = turno.ID_Turno;
 
     let atencion = {
+      ID_Atencion: atencionActual.ID_Atencion,
       ID_Usuario: userID,
       ID_Turno: turnoID,
       Ventanilla: ventanilla,
       Estado: estado,
       Fecha_Inicio: fechaInicio,
       Fecha_Final: fechaFormateada,      
-      Observacion: observacion,
-      Calificacion: "NO CALIFICADO"
+      Observacion: observacion
     }
     
+    const urlActualizarAtencion = atencionesAPI.actualizarAtencionPorID(atencion.ID_Atencion, atencion.ID_Turno, atencion.ID_Usuario, atencion.Ventanilla, atencion.Estado, atencion.Fecha_Inicio, atencion.Fecha_Final, atencion.Observacion);
     axios
-    .get(apiUrlActualizarAtencion + "?id_Turno=" + atencion.ID_Turno + "&id_Usuario=" + atencion.ID_Usuario + "&ventanilla=" + atencion.Ventanilla + "&estado=" + atencion.Estado + "&fecha_Inicio=" + atencion.Fecha_Inicio + "&fecha_Final=" + atencion.Fecha_Final + "&observacion=" + atencion.Observacion + "&calificacion=" + atencion.Calificacion)
+    .get(urlActualizarAtencion)
     .then((response) => {
       
     })
@@ -259,8 +254,9 @@ const Trabajador = () => {
       console.error("Error fetching data:", error);
     });
     
+    const urlActualizarTurno = turnosAPI.actualizarEstadoTurnoPorID(atencion.ID_Turno, 5);
     axios
-    .get(apiUrlActualizarTurno + atencion.id_Turno + "&estado=5")
+    .get(urlActualizarTurno)
     .then((response) => {
       setEstados(response.data);
     })
@@ -324,7 +320,6 @@ const Trabajador = () => {
 
         <div id="myModal" className="modal">
           <div className="modal-content">
-            <span className="close" onClick={closeModal}>&times;</span>
             <div className="modal-body">
                 <header>SUCURSAL {sucursal.Nombre}</header>
                 <p id="">MOTIVO: {obtenerTipo(turno.ID_Tipo_Consulta)}</p>
@@ -332,7 +327,6 @@ const Trabajador = () => {
                 <textarea type="text" rows="4" className='observaciones' id='observaciones' placeholder='Ingrese las observaciones' maxLength='200'/>
                 <br/>
                 <div className="botones">
-                  <button className="btnCancelar" onClick={closeModal}>CANCELAR</button>
                   <button className="btnAceptar" onClick={completarAtencion}>ACEPTAR</button>
                 </div>
             </div>
