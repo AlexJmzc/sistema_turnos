@@ -4,12 +4,14 @@ import logo from '../../assets/img/Logo.png';
 import ticket from '../../assets/img/ticket.png';
 import './home.css';
 import { useNavigate } from 'react-router-dom';
-import { urlSucursales } from '../../api/urls';
+import { Sucursales } from '../../api/urls';
 import axios from 'axios';
 
 const Home = () => {
+  const sucursal = new Sucursales();
+
   //!URL API
-  const apiUrl = urlSucursales.obtenerTodasLasSucursales;
+  const apiUrl = sucursal.listarSucursales();
 
   //!Navegacion
   const navigate = useNavigate();

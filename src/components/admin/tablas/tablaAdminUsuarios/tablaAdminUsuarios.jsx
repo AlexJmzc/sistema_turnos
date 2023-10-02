@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import './tablaAdminUsuarios.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
+import { Usuarios, Trabajadores, Estados, Roles } from '../../../../api/urls';
     
 const TablaAdminUsuarios = () => {
-    const apiUrlUsuarios = 'http://localhost:3014/ServiciosTurnos.svc/ListaDatosUsuarios';
-    const apiUrlTrabajadores = 'http://localhost:3014/ServiciosTurnos.svc/ListaTrabajadores';
-    const apiUrlEstados = 'http://localhost:3014/ServiciosTurnos.svc/ListaEstados';
-    const apiUrlRoles = 'http://localhost:3014/ServiciosTurnos.svc/ListaRoles';
+    //? INSTANCIAS DE LAS CLASES DE LAS API
+    const usuariosAPI = new Usuarios();
+    const trabajadoresAPI = new Trabajadores();
+    const estadosAPI = new Estados();
+    const rolesAPI = new Roles();
 
+    //? VARIABLES DE LA VENTANA
     const [datosUsuario, setDatosUsuario] = useState(['']);
     const [trabajadores, setTrabajadores] = useState(['']);
     const [usuarios, setUsuarios] = useState(['']);
@@ -19,6 +22,12 @@ const TablaAdminUsuarios = () => {
     const [rol, setRol] = useState(0);
     const [estado, setEstado] = useState(0);
     const [cadena, setCadena] = useState('');
+
+    //! URL
+    const apiUrlUsuarios = usuariosAPI.listaDatosUsuarios();
+    const apiUrlTrabajadores = trabajadoresAPI.listaTrabajadores();
+    const apiUrlEstados = estadosAPI.listarEstados();
+    const apiUrlRoles = rolesAPI.listarRoles();
 
     //! NAVEGACION
     const navigate = useNavigate();

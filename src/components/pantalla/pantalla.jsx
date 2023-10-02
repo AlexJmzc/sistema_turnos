@@ -2,10 +2,14 @@ import React, {useState, useEffect} from 'react';
 import './pantalla.css';
 import video from '../../assets/video/emapa.mp4';
 import axios from 'axios';
-import sonido from '../../assets/sonido/alerta.mp3';
-import logo from '../../assets/img/Logo.png';
+import { Atenciones, Turnos, Sucursales } from '../../api/urls'; 
 
 const Pantalla = () => {
+  //? INSTANCIAS DE LAS CLASES DE LA API
+  const atencionesAPI = new Atenciones();
+  const turnosAPI = new Turnos();
+  const sucursalesAPI = new Sucursales();
+
   //? CONSTANTES DE LA VENTANA
   const [turnos, setTurnos] = useState([]);
   const [turnosAtendiendo, setTurnosAtendiendo] = useState([]);
@@ -16,10 +20,10 @@ const Pantalla = () => {
   const synthesis = window.speechSynthesis;
 
   //! URL API
-  const apiUrlTurnos = "http://localhost:3014/ServiciosTurnos.svc/TurnosSucursalEstado?";
-  const apiUrlAtenciones = "http://localhost:3014/ServiciosTurnos.svc/ListaAtenciones";
-  const apiUrlSucursal = "http://localhost:3014/ServiciosTurnos.svc/Sucursal";
-
+  const apiUrlAtenciones = atencionesAPI.listarAtenciones();
+  const apiUrlTurnosEspera = turnosAPI.turnosPorSucursalEstado(selectedValue, 3);
+  const apiUrlTurnosAtendiendo = turnosAPI.turnosPorSucursalEstado(selectedValue, 4);
+  const apiUrlSucursales = sucursalesAPI.sucursalPorID(selectedValue); 
 
   //! CARGA LAS ATENCIONES
   useEffect(() => {
@@ -31,43 +35,43 @@ const Pantalla = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, [atenciones])
+  }, [atenciones, apiUrlAtenciones])
 
   //! CARGA LOS TURNOS SACADOS EN DICHA SUCURSAL Y CON ESTADO EN ESPERA
   useEffect(() => {
     axios
-      .get(apiUrlTurnos + "id=" + selectedValue + "&idEstado=3")
+      .get(apiUrlTurnosEspera)
       .then((response) => {
         setTurnos(response.data);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, [turnos, selectedValue])
+  }, [turnos, selectedValue, apiUrlTurnosEspera])
 
   //! CARGA SUCURSAL
   useEffect(() => {
     axios
-      .get(apiUrlSucursal + "?id=" + selectedValue)
+      .get(apiUrlSucursales)
       .then((response) => {
         setSucursal(response.data);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, [sucursal, selectedValue, apiUrlSucursal])
+  }, [sucursal, selectedValue, apiUrlSucursales])
 
-  //! CARGA LOS TURNOS SACADOS EN DICHA SUCURSAL Y CON ESTADO EN ESPERA
+  //! CARGA LOS TURNOS SACADOS EN DICHA SUCURSAL Y CON ESTADO ATENDIENDO
   useEffect(() => {
     axios
-      .get(apiUrlTurnos + "id=" + selectedValue + "&idEstado=4")
+      .get(apiUrlTurnosAtendiendo)
       .then((response) => {
         setTurnosAtendiendo(response.data);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, [turnosAtendiendo, selectedValue])
+  }, [turnosAtendiendo, selectedValue, apiUrlTurnosAtendiendo])
 
   
   function reproducirSonido(texto) {
@@ -105,7 +109,7 @@ const Pantalla = () => {
           if(atencion[0] != null) {
               return atencion[0].Ventanilla;
           } else {
-          return 1;
+              return 1;
           }
     }
   }

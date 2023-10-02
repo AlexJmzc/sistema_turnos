@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from "react";
 import "./clientes.css";
 import login from "../../assets/img/Logo.png";
-import { urlSucursales } from "../../api/urls";
+import { Sucursales, Tipos_Consulta, Turnos, Contadores } from "../../api/urls";
 import axios from "axios";
 
 const Clientes = () => {
+  //? INSTANCIAS DE LAS CLASES DE LAS APIS
+  const sucursales = new Sucursales();
+  const consultas = new Tipos_Consulta();
+  const turnos = new Turnos();
+  const contadores = new Contadores();
+
   //? CONSTANTES DE LA VENTANA
   const [ selectedValue ] = localStorage.getItem("sucursal");
   const [tipos, setTipos] = useState([""]);
@@ -12,12 +18,8 @@ const Clientes = () => {
   const [sucursal, setSucursal] = useState(null);
 
   //!URL API
-  const apiUrlConsultas = "http://localhost:3014/ServiciosTurnos.svc/ListaTiposConsulta";
-  const apiUrlSucursal = urlSucursales.obtenerSucursal + selectedValue;
-  const apiUrlNuevoTurno = "http://localhost:3014/ServiciosTurnos.svc/NuevoTurno?";
-  const apiUrlGetContador = "http://localhost:3014/ServiciosTurnos.svc/Contador?id_Sucursal=";
-  const apiUrlNuevoContador = "http://localhost:3014/ServiciosTurnos.svc/NuevoContador?id_Sucursal=";
-  const apiUrlActualizarContador = "http://localhost:3014/ServiciosTurnos.svc/ActualizarContador?id_Sucursal=";
+  const apiUrlConsultas = consultas.listarTiposConsulta();
+  const apiUrlSucursal = sucursales.sucursalPorID(selectedValue);
 
   //! CARGA DE CONSULTAS
   useEffect(() => {
@@ -29,7 +31,7 @@ const Clientes = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, [tipos]);
+  }, [tipos, apiUrlConsultas]);
 
   //! CARGA DE SUCURSAL
   useEffect(() => {
@@ -47,8 +49,9 @@ const Clientes = () => {
   //TODO: INCREMENTAR CONTADOR
   function incrementarContador(id_Consulta, id_Sucursal, numero) {
     let nuevoNumero = numero + 1;
+    const url = contadores.actualizarContadorNumero(id_Sucursal, id_Consulta, nuevoNumero);
       axios
-      .get(apiUrlActualizarContador + id_Sucursal + "&id_Tipo_Consulta=" + id_Consulta + "&numero=" + nuevoNumero)
+      .get(url)
       .then((response) => {
           
       })
@@ -57,17 +60,17 @@ const Clientes = () => {
       });
   }
 
-
   //TODO: GET CONTADOR
   async function getContador(id_Consulta, id_Sucursal) {
     let contador = {};
-  
+    const urlGetContador = contadores.contadorPorID(id_Sucursal, id_Consulta);
+    const urlNuevoContador = contadores.crearContador(id_Sucursal, id_Consulta);
     try {
-      const response = await axios.get(apiUrlGetContador + id_Sucursal + "&id_Consulta=" + id_Consulta);
+      const response = await axios.get(urlGetContador);
       contador = response.data;
   
       if (contador.ID_Sucursal === 0) {
-        const nuevoContadorResponse = await axios.get(apiUrlNuevoContador + id_Sucursal + "&id_Tipo_Consulta=" + id_Consulta + "&numero=1");
+        const nuevoContadorResponse = await axios.get(urlNuevoContador);
         contador = nuevoContadorResponse.data;
       }
     } catch (error) {
@@ -140,9 +143,10 @@ const Clientes = () => {
 
   //TODO: SACAR TURNO
   const sacarTurno = (e) => {
-    let url = apiUrlNuevoTurno + "id_Tipo_Consulta=" + turno.id_Consulta + "&id_Sucursal=" + turno.id_Sucursal + "&fecha=" + turno.fecha + "&numero_turno=" + turno.numeroTurno + "&estado=" + turno.estado;
+    const urlNuevoTurno = turnos.crearNuevoTurno(turno.id_Consulta, turno.id_Sucursal, turno.fecha, turno.numeroTurno, turno.estado);
+  
     axios
-    .get(url)
+    .get(urlNuevoTurno)
     .then((response) => {
       incrementarContador(turno.id_Consulta, turno.id_Sucursal, turno.num);
       alert("Turno generado");

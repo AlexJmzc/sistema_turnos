@@ -3,9 +3,13 @@ import logo from '../../assets/img/Logo.png';
 import './login.css';
 import { useNavigate } from 'react-router';
 import axios from 'axios';
-import { urlUsuarios, urlSucursales } from '../../api/urls';
+import { Usuarios, Sucursales } from '../../api/urls';
 
 const Login = () => {
+  //? INSTANCIAS DE LAS CLASES DE LAS API
+  const sucursalesAPI = new Sucursales();
+  const usuariosAPI = new Usuarios();
+
   //? Sucursal
   const [ selectedValue ] = localStorage.getItem("sucursal");
   const [sucursal, setSucursal] = useState();
@@ -14,8 +18,7 @@ const Login = () => {
   const [arrayNumeros, setArray] = useState([]);
 
   //URL API
-  const apiUrl = urlUsuarios.login;
-  const apiUrlSucursal = urlSucursales.obtenerSucursal + selectedValue;
+  const apiUrlSucursal = sucursalesAPI.sucursalPorID(selectedValue);
 
   //Logeo
   const [nombre, setNombre] = useState('');
@@ -79,7 +82,8 @@ const Login = () => {
 
   //Login
   const Logeo = async () => {
-    const response = await axios.get(apiUrl + "?nombre=" + nombre + "&clave=" + clave);
+    const url = usuariosAPI.logeo(nombre, clave);
+    const response = await axios.get(url);
 
     const user = response.data;
 
