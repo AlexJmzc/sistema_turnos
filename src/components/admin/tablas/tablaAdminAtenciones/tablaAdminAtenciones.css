@@ -10,6 +10,19 @@
     height: fit-content;
 }
 
+.btnResetear {
+    width: 150px;
+    color:#fff;
+    border:none;
+    position:relative;
+    font-size:15px;
+    padding:0 2em;
+    cursor:pointer;
+    transition:800ms ease all;
+    outline:none;
+    background-color: #fccf07;
+}
+
 .btnObservacion {
     width: 150px;
     color:#fff;
@@ -18,15 +31,36 @@
     height:40px;
     font-size:15px;
     padding:0 2em;
+    margin-right: 10px;
     cursor:pointer;
     transition:800ms ease all;
     outline:none;
     background-color: #cadf0d;
 }
 
+.btnCalificacion {
+    width: 150px;
+    color:#fff;
+    border:none;
+    position:relative;
+    height:40px;
+    font-size:15px;
+    padding:0 2em;
+    margin-right: 10px;
+    cursor:pointer;
+    transition:800ms ease all;
+    outline:none;
+    background-color: #38ab1b;
+}
+
 .btnObservacion:hover{
     background:#fff;
     color:#cadf0d;
+}
+
+.btnCalificacion:hover{
+    background:#fff;
+    color:#38ab1b;
 }
 
 .btnObservacion:before,.btnObservacion:after{
@@ -40,6 +74,17 @@
     transition:400ms ease all;
 }
 
+.btnCalificacion:before,.btnCalificacion:after{
+    content:'';
+    position:absolute;
+    top:0;
+    right:0;
+    height:2px;
+    width:0;
+    background: #38ab1b;
+    transition:400ms ease all;
+}
+
 .btnObservacion:after{
     right:inherit;
     top:inherit;
@@ -47,7 +92,19 @@
     bottom:0;
 }
 
+.btnCalificacion:after{
+    right:inherit;
+    top:inherit;
+    left:0;
+    bottom:0;
+}
+
 .btnObservacion:hover:before,.btnObservacion:hover:after{
+    width:100%;
+    transition:800ms ease all;
+}
+
+.btnCalificacion:hover:before,.btnCalificacion:hover:after{
     width:100%;
     transition:800ms ease all;
 }

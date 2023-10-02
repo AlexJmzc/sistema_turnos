@@ -1,15 +1,20 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigate } from 'react-router';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import './tablaAdminAtenciones.css';
+import { Sucursales, Atenciones } from '../../../../api/urls';
 
 const TablaAdminAtenciones = () => {
-  const apiUrlAtenciones = 'http://localhost:3014/ServiciosTurnos.svc/ListaDatosAtenciones';
-  const apiUrlSucursales = 'http://localhost:3014/ServiciosTurnos.svc/ListaSucursales';
+  //? INSTANCIAS DE LAS CLASES DE LAS API
+  const sucursalesAPI = new Sucursales();
+  const atencionesAPI = new Atenciones();
 
+  //? VARIABLES DE LA VENTANA
   const [atenciones, setAtenciones] = useState([]);
   const [sucursales, setSucursales] = useState([]);
   const [datosAtenciones, setDatosAtenciones] = useState(['']);
@@ -17,7 +22,16 @@ const TablaAdminAtenciones = () => {
 
   //? VALORES DE BUSQUEDA
   const [sucursal, setSucursal] = useState(0);
+  const [valoracion, setValoracion] = useState("");
   const [cadena, setCadena] = useState('');
+  const [fechaInicial, setFechaInicial] = useState(null);
+  const [fechaFinal, setFechaFinal] = useState(null);
+
+  //! URL
+  const apiUrlAtenciones = atencionesAPI.listarDatosAtenciones();
+  const apiUrlSucursales = sucursalesAPI.listarSucursales();
+
+  
 
   //! NAVEGACION
   const navigate = useNavigate();
@@ -49,7 +63,7 @@ const TablaAdminAtenciones = () => {
   //! CARGA DE ATENCIONES, ESTADOS
   useEffect(() => {
     fetchData(apiUrlAtenciones, setAtenciones);
-  }, [atenciones]);
+  }, [atenciones, apiUrlAtenciones]);
 
   //! CARGA LOS TRABAJADORES
   useEffect(() => {
@@ -67,22 +81,39 @@ const TablaAdminAtenciones = () => {
   useEffect(() => {
     const filtered = atenciones.filter(item => {
         const matchesSucursal = sucursal === 0 || item.Sucursal === sucursal;
+        const matchesValoracion = valoracion === "" || item.Valoracion === valoracion;
         const matchesCadena = cadena === '' || 
                 item.Nombre_Usuario.toLowerCase().includes(cadena.toLowerCase()) ||
                 item.Nombre_Trabajador.toLowerCase().includes(cadena.toLowerCase()) ||
                 item.Numero_Turno.toLowerCase().includes(cadena.toLowerCase());
 
-        const fecha = obtenerHora(item.Fecha);
-        const matchesFecha = cadena === '' || 
-                fecha.toLowerCase().includes(cadena.toLowerCase());
-
+        const fecha = obtenerFecha(item.Fecha_Turno);
+        let matchesFecha = [];
+        if(fechaInicial !== null && fechaFinal === null) {
+          const fechaInicialFiltro = new Date(fechaInicial);
+          const fechaFormateada = fechaInicialFiltro.toISOString().split('T')[0];
   
-        return matchesSucursal && (matchesCadena || matchesFecha);
+          matchesFecha = fechaInicial === null || 
+                  fecha === fechaFormateada;
+        } else if(fechaFinal !== null && fechaInicial !== null) {
+          //! FECHA DE ATENCION
+          const partesFecha = fecha.split('-');
+          const año = parseInt(partesFecha[0]);
+          const mes = parseInt(partesFecha[1]);
+          const dia = parseInt(partesFecha[2]);
+          const fechaItem = new Date(Date.UTC(año, mes - 1, dia + 1));
+          fechaItem.setHours(0,0,0,0);
+
+          matchesFecha = (!fechaInicial || fechaItem >= fechaInicial) &&
+                  (!fechaFinal || fechaItem <= fechaFinal);
+        }
+  
+        return matchesSucursal && matchesCadena && matchesValoracion && matchesFecha;
       });
        
     setDatosAtenciones(filtered);
     
-}, [atenciones, sucursal, cadena]);
+}, [atenciones, sucursal, cadena, valoracion, fechaInicial, fechaFinal]);
 
   //TODO: OBTENER SUCURSAL
   const obtenerSucursal = (id) => {
@@ -96,7 +127,7 @@ const TablaAdminAtenciones = () => {
     }
   }
 
-  //TODO: OBTENER LA FECHA Y HORA
+  //TODO: OBTENER HORA
   const obtenerHora = (f) => {
     if(f) {
       const match = f.match(/\/Date\((\d+)([+-]\d{4})\)\//);
@@ -107,7 +138,7 @@ const TablaAdminAtenciones = () => {
   
         const date = new Date(timestamp + timeZoneOffset);
   
-        const fechaFormateada = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:00`;
+        const fechaFormateada = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
   
         return fechaFormateada;
       
@@ -115,13 +146,39 @@ const TablaAdminAtenciones = () => {
     } else {
       return 1;
     }
-    
   }
 
-  //TODO: CAMBIO DE ESTADO SELECT ROLES
+  //TODO: OBTENER LA FECHA
+  const obtenerFecha = (f) => {
+    if(f) {
+      const match = f.match(/\/Date\((\d+)([+-]\d{4})\)\//);
+
+      if (match) {
+        const timestamp = parseInt(match[1], 10);
+        const timeZoneOffset = -5 * 60 * 60; 
+  
+        const date = new Date(timestamp + timeZoneOffset);
+  
+        const fechaFormateada = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  
+        return fechaFormateada;
+      
+      } 
+    } else {
+      return 1;
+    }
+  }
+
+  //TODO: CAMBIO DE ESTADO SELECT SUCURSALES
   const cambioSucursal = (e) => {
     const dato = parseInt(e.target.value);
     setSucursal(dato);
+  }
+
+  //TODO: CAMBIO DE ESTADO SELECT VALORACIONES
+  const cambioValoracion = (e) => {
+    const dato = e.target.value;
+    setValoracion(dato);
   }
 
   //TODO: CAMBIO DE ESTADO SELECT ESTADOS 
@@ -129,6 +186,16 @@ const TablaAdminAtenciones = () => {
     const dato = e.target.value;
     setCadena(dato);
   }
+
+  const handleStartDateChange = (date) => {
+    console.log(date);
+   setFechaInicial(date);
+  };
+
+  const handleEndDateChange = (date) => {
+    console.log(date);
+    setFechaFinal(date);
+  };
 
   //TODO: LOGOUT
   const logout = () => {
@@ -141,12 +208,17 @@ const TablaAdminAtenciones = () => {
 
   //TODO: GENERAR PDF
   const generatePDF = () => {
-    const datos = datosAtenciones.map(item => [item.Numero_Turno, item.Nombre_Usuario, item.Nombre_Trabajador, obtenerHora(item.Fecha_Turno), obtenerHora(item.Fecha_Inicio), obtenerHora(item.Fecha_Final), obtenerSucursal(item.Sucursal), item.Calificacion, item.Observacion]);
+    const datos = datosAtenciones.map(item => [item.Numero_Turno, item.Nombre_Usuario, item.Nombre_Trabajador, obtenerFecha(item.Fecha_Turno), obtenerHora(item.Fecha_Turno), obtenerHora(item.Fecha_Inicio), obtenerHora(item.Fecha_Final), obtenerSucursal(item.Sucursal), item.Observacion, item.Pregunta_1, item.Pregunta_2, item.Pregunta_3, item.Valoracion]);
 
-    const doc = new jsPDF();
+    const doc = new jsPDF({
+      orientation:'landscape',
+      unit: 'mm',
+      format: [297, 210],
+    });
+
     doc.text('Tabla de Atenciones', 10, 10);
 
-    const headers = ['Numero Turno', 'Usuario', 'Trabajador', 'Fecha Turno', 'Fecha Inicio', 'Fecha Final', 'Sucursal', 'Calificacion', 'Observacion'];
+    const headers = ['Numero Turno', 'Usuario', 'Trabajador', 'Fecha', 'Hora Turno', 'Hora Inicio', 'Hora Final', 'Sucursal', 'Observacion', 'Pregunta 1', 'Pregunta 2', 'Pregunta 3', 'Valoracion'];
 
     doc.autoTable({ head: [headers], body: datos });
 
@@ -156,8 +228,8 @@ const TablaAdminAtenciones = () => {
   //TODO: GENERAR EXCEL
   const generateExcel = () => {
     const wb = XLSX.utils.book_new();
-    const datos = datosAtenciones.map(item => [item.Numero_Turno, item.Nombre_Usuario, item.Nombre_Trabajador, obtenerHora(item.Fecha_Turno), obtenerHora(item.Fecha_Inicio), obtenerHora(item.Fecha_Final), obtenerSucursal(item.Sucursal), item.Calificacion, item.Observacion]);
-    const headers = ['Numero Turno', 'Usuario', 'Trabajador', 'Fecha Turno', 'Fecha Inicio', 'Fecha Final', 'Sucursal', 'Calificacion', 'Observacion'];
+    const datos = datosAtenciones.map(item => [item.Numero_Turno, item.Nombre_Usuario, item.Nombre_Trabajador, obtenerFecha(item.Fecha_Turno), obtenerHora(item.Fecha_Turno), obtenerHora(item.Fecha_Inicio), obtenerHora(item.Fecha_Final), obtenerSucursal(item.Sucursal), item.Observacion, item.Pregunta_1, item.Pregunta_2, item.Pregunta_3, item.Valoracion]);
+    const headers = ['Numero Turno', 'Usuario', 'Trabajador', 'Fecha', 'Hora Turno', 'Hora Inicio', 'Hora Final', 'Sucursal', 'Observacion', 'Pregunta 1', 'Pregunta 2', 'Pregunta 3', 'Valoracion'];
 
     const wsData = [headers, ...datos];
     const ws = XLSX.utils.aoa_to_sheet(wsData);
@@ -172,17 +244,39 @@ const TablaAdminAtenciones = () => {
     XLSX.writeFile(wb, 'Reporte_Atenciones.xlsx');
   };
 
-  //TODO: VER OBSERVACION
-  const abrirModal = (item) => {
+  //TODO: VER CALIFICACION
+  const abrirModalCalificacion = (item) => {
     setAtencion(item);
-    let modal = document.getElementById("myModal");
+    let modal = document.getElementById("modalCalificacion");
     modal.style.display = "block";
   }
 
-   //TODO: CERRAR MODAL
-   const closeModal = () => {
-    let modal = document.getElementById("myModal");
+  //TODO: VER OBSERVACION
+  const abrirModalObservacion = (item) => {
+    setAtencion(item);
+    let modal = document.getElementById("modalObservacion");
+    modal.style.display = "block";
+  }
+
+   //TODO: CERRAR MODAL CALIFICACION
+   const closeModalCalificacion = () => {
+    let modal = document.getElementById("modalCalificacion");
     modal.style.display = "none";
+   }
+
+   //TODO: CERRAR MODAL CALIFICACION
+   const closeModalObservacion = () => {
+    let modal = document.getElementById("modalObservacion");
+    modal.style.display = "none";
+   }
+
+   //TODO: RESETEAR FILTROS
+   const resetear = () => {
+      setSucursal(0);
+      setFechaInicial(null);
+      setFechaFinal(null);
+      setCadena('');
+      setValoracion("");
    }
 
   return (
@@ -192,14 +286,42 @@ const TablaAdminAtenciones = () => {
             <button className='btnLogout' onClick={logout}>Cerrar Sesión</button>
         </div>
         <div className="Main-buscador">
-            <select className="sucursales" id="sucursales" onChange={cambioSucursal}>
+            <select className="sucursales" id="sucursales" onChange={cambioSucursal} value={sucursal}>
                 <option value="0">Sucursales</option>
                 {sucursales.map((sucursal) => (
                     <option value={sucursal.ID_Sucursal}>{sucursal.Nombre}</option>
                 ))}
             </select>
 
-            <input type="text" className='buscador' id='buscador' placeholder='Buscar' onChange={cambioCadena}/>
+            <select className="valoracion" id="valoracion" onChange={cambioValoracion} value={valoracion}>
+                <option value="">Valoracion</option>
+                <option value="BUENA">BUENA</option>
+                <option value="REGULAR">REGULAR</option>
+                <option value="MALA">MALA</option>
+                <option value="NO CALIFICADO">NO CALIFICADO</option>
+            </select>
+
+            <DatePicker
+              selected={fechaInicial}
+              onChange={handleStartDateChange}
+              selectsStart
+              startDate={fechaInicial}
+              endDate={fechaFinal}
+              placeholderText="Fecha de inicio"
+            />
+            <DatePicker
+              selected={fechaFinal}
+              onChange={handleEndDateChange}
+              selectsEnd
+              startDate={fechaInicial}
+              endDate={fechaFinal}
+              minDate={fechaInicial}
+              placeholderText="Fecha de fin"
+            />
+
+            <input type="text" className='buscador' id='buscador' placeholder='Buscar' onChange={cambioCadena} value={cadena}/>
+
+            <button className='btnResetear' onClick={resetear}>Resetear</button>
         </div>
         <table className="styled-table">
             <thead>
@@ -208,11 +330,12 @@ const TablaAdminAtenciones = () => {
                     <th>Numero Turno</th>
                     <th>Usuario</th>
                     <th>Trabajador</th>
-                    <th>Fecha Turno</th>
-                    <th>Fecha Inicio</th>
-                    <th>Fecha Fin</th>
+                    <th>Fecha</th>
+                    <th>Hora Turno</th>
+                    <th>Hora Inicio</th>
+                    <th>Hora Final</th>
                     <th>Sucursal</th>
-                    <th>Calificación</th>
+                    <th></th>
                     <th></th>
                 </tr>
             </thead>
@@ -223,22 +346,37 @@ const TablaAdminAtenciones = () => {
                         <td>{item.Numero_Turno}</td>
                         <td>{item.Nombre_Usuario}</td>
                         <td>{item.Nombre_Trabajador}</td>
+                        <td>{obtenerFecha(item.Fecha_Turno)}</td>
                         <td>{obtenerHora(item.Fecha_Turno)}</td>
                         <td>{obtenerHora(item.Fecha_Inicio)}</td>
                         <td>{obtenerHora(item.Fecha_Final)}</td>
                         <td>{obtenerSucursal(item.Sucursal)}</td>
-                        <td>{item.Calificacion}</td>
                         <td>
-                            <button className='btnObservacion' onClick={() => abrirModal(item)}>Ver observación</button>
+                            <button className='btnCalificacion' onClick={() => abrirModalCalificacion(item)}>Calificacion</button>
+                        </td>
+                        <td>
+                            <button className='btnObservacion' onClick={() => abrirModalObservacion(item)}>Observación</button>
                         </td>
                     </tr>
                 ))}
             </tbody>
         </table>
 
-        <div id="myModal" className="modal">
+        <div id="modalCalificacion" className="modal">
           <div className="modal-content">
-            <span className="close" on onClick={closeModal}>&times;</span>
+            <span className="close" on onClick={closeModalCalificacion}>&times;</span>
+            <div className="modal-body">
+              <h1>¿Está satisfecho con esta atención?: {atencion.Pregunta_1}</h1>
+              <h1>¿El agente mostró conocimiento sobre el tema?: {atencion.Pregunta_2}</h1>
+              <h1>¿El tiempo fue adecuado?: {atencion.Pregunta_3}</h1>
+              <h1>Valoracion: {atencion.Valoracion}</h1>
+            </div>
+          </div>
+        </div>
+
+        <div id="modalObservacion" className="modal">
+          <div className="modal-content">
+            <span className="close" on onClick={closeModalObservacion}>&times;</span>
             <div className="modal-body">
               <h1>Observación: {atencion.Observacion}</h1>
             </div>
