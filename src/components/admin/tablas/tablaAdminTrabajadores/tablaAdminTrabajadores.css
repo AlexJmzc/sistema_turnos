@@ -1,0 +1,42 @@
+.btnEliminar {
+    width: 150px;
+    color:#fff;
+    border:none;
+    position:relative;
+    height:40px;
+    font-size:15px;
+    padding:0 2em;
+    margin-right: 10px;
+    cursor:pointer;
+    transition:800ms ease all;
+    outline:none;
+    background-color: #d51313;
+}
+
+.btnEliminar:hover{
+    background:#fff;
+    color:#d51313;
+}
+
+.btnEliminar:before,.btnEliminar:after{
+    content:'';
+    position:absolute;
+    top:0;
+    right:0;
+    height:2px;
+    width:0;
+    background: #d51313;
+    transition:400ms ease all;
+}
+
+.btnEliminar:after{
+    right:inherit;
+    top:inherit;
+    left:0;
+    bottom:0;
+}
+
+.btnEliminar:hover:before,.btnEliminar:hover:after{
+    width:100%;
+    transition:800ms ease all;
+}
