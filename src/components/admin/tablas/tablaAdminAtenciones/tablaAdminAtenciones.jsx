@@ -138,7 +138,7 @@ const TablaAdminAtenciones = () => {
   
         const date = new Date(timestamp + timeZoneOffset);
   
-        const fechaFormateada = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        const fechaFormateada = `${String(date.getHours() - 5).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
   
         return fechaFormateada;
       
@@ -188,12 +188,10 @@ const TablaAdminAtenciones = () => {
   }
 
   const handleStartDateChange = (date) => {
-    console.log(date);
    setFechaInicial(date);
   };
 
   const handleEndDateChange = (date) => {
-    console.log(date);
     setFechaFinal(date);
   };
 
