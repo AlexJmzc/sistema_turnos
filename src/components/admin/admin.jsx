@@ -100,7 +100,7 @@ const Admin = () => {
           <div className='item'>
               <p>TRABAJADORES</p>
               <img src={login} alt=''></img>
-              <button className='Btn' id='trabajadores'>VER</button>
+              <button className='Btn' id='trabajadores' onClick={redirect}>VER</button>
           </div>
 
           <div className='item'>
