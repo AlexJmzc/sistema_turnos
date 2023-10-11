@@ -98,9 +98,10 @@ const Login = () => {
         alert("Selecciona la ventanilla");
       } else {
         setUsuario(user);
-        localStorage.setItem("user", JSON.stringify(user.ID_Usuario));
+        localStorage.setItem("user", user.ID_Usuario);
         localStorage.setItem("token", JSON.stringify(user.Token));
-        localStorage.setItem("rol", JSON.stringify(user.ID_Rol));
+        localStorage.setItem("rol", user.ID_Rol);
+        localStorage.setItem("ventanilla", ventanilla);
         Redireccion(user.ID_Rol);
       }
         
