@@ -1,14 +1,20 @@
-const baseURL = "http://localhost:3014/";
+//const baseURL = "http://localhost:3014/";
+const baseURL = "http://localhost:4040/";
 
 const baseServicio = "ServiciosTurnos.svc";
 
 const urlTotal = baseURL + baseServicio;
 
+export const head = {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Accept': '*/*'
+}
+
 export class Estados {
     listaEstados = "/ListaEstados";
     estadoID = "/Estado?id=";
     estadoNombre = "/EstadoNombre?nombre=";
-    nuevoEstado = "/EstadoNombre?nombre=";
+    nuevoEstado = "/EstadoNombre";
     actualizarEstado = "/ActualizarEstado";
 
     listarEstados() {
@@ -26,13 +32,13 @@ export class Estados {
         return url;
     }
 
-    crearNuevoEstado(nombre) {
-        const url = urlTotal + this.nuevoEstado + nombre;
+    crearNuevoEstado() {
+        const url = urlTotal + this.nuevoEstado;
         return url;
     }
 
-    actualizarEstadoPorID(id, nombre) {
-        const url = urlTotal + this.actualizarEstado + "?id_Estado=" + id + "&nombre=" + nombre;
+    actualizarEstadoPorID() {
+        const url = urlTotal + this.actualizarEstado;
         return url;
     }
 }
@@ -66,17 +72,18 @@ export class Roles {
         return url;
     }
 
-    crearNuevoRol(nombre, estado) {
-        const url = urlTotal + "?nombre=" + nombre + "&estado=" + estado;
-        return url;
-    }
-    actualizarRolPorID(id, nombre, estado) {
-        const url = urlTotal + "?id_Rol=" + id + "&nombre=" + nombre + "&estado=" + estado;
+    crearNuevoRol() {
+        const url = urlTotal + this.nuevoRol;
         return url;
     }
 
-    eliminarRolPorID(id, estado) {
-        const url = urlTotal + "?id_Rol=" + id + "&estado=" + estado;
+    actualizarRolPorID() {
+        const url = urlTotal + this.actualizarRol;
+        return url;
+    }
+
+    eliminarRolPorID() {
+        const url = urlTotal + this.eliminarRol;
         return url;
     }
 }
@@ -110,18 +117,18 @@ export class Tipos_Consulta {
         return url;
     }
 
-    crearNuevoTipoConsulta(nombre, estado) {
-        const url = urlTotal + this.nuevoTipoConsulta + "?nombre=" + nombre + "&estado=" + estado;
+    crearNuevoTipoConsulta() {
+        const url = urlTotal + this.nuevoTipoConsulta;
         return url;
     }
 
-    actualizarTipoConsultaPorID(id, nombre, estado) {
-        const url = urlTotal+ this.actualizarTipoConsulta + "?id_Tipo_Consulta=" + id + "&nombre=" + nombre + "&estado=" + estado;
+    actualizarTipoConsultaPorID() {
+        const url = urlTotal+ this.actualizarTipoConsulta;
         return url;
     }
 
-    eliminarTipoConsultaPorID(id, estado) {
-        const url = urlTotal + this.eliminarTipoConsulta + "?id_Tipo_Consulta=" + id + "&estado=" + estado;
+    eliminarTipoConsultaPorID() {
+        const url = urlTotal + this.eliminarTipoConsulta;
         return url;
     }
 }
@@ -155,18 +162,18 @@ export class Sucursales {
         return url;
     }
 
-    crearNuevaSucursal(nombre, numero, estado) {
-        const url = urlTotal + this.nuevaSucursal + "?nombre=" + nombre + "&numero=" + numero + "&estado=" + estado;
+    crearNuevaSucursal() {
+        const url = urlTotal + this.nuevaSucursal;
         return url;
     }
 
-    actualizarSucursalPorID(id, nombre, numero, estado) {
-        const url = urlTotal + this.actualizarSucursal + "?id_Sucursal=" + id + "&nombre=" + nombre + "&numero=" + numero + "&estado=" + estado;
+    actualizarSucursalPorID() {
+        const url = urlTotal + this.actualizarSucursal;
         return url;
     }
 
-    eliminarSucursalPorID(id, estado) {
-        const url = urlTotal + this.eliminarSucursal + "?id_Sucursal=" + id + "&estado=" + estado;
+    eliminarSucursalPorID() {
+        const url = urlTotal + this.eliminarSucursal;
         return url;
     }
 }
@@ -200,18 +207,18 @@ export class Trabajadores {
         return url;
     }
 
-    crearNuevoTrabajador(cedula, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, fecha, estado) {
-        const url = urlTotal + this.nuevoTrabajador + "?cedula=" + cedula + "&primer_nombre=" + primer_nombre + "&segundo_nombre=" + segundo_nombre + "&primer_apellido=" + primer_apellido + "&segundo_apellido=" + segundo_apellido + "&fecha_nacimiento=" + fecha + "&estado=" + estado;
+    crearNuevoTrabajador() {
+        const url = urlTotal + this.nuevoTrabajador;
         return url;
     }
 
-    actualizarTrabajadorPorID(id, cedula, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, fecha, estado) {
-        const url = urlTotal + this.actualizarTrabajador + "?id_Trabajador" + id + "&cedula=" + cedula + "&primer_nombre=" + primer_nombre + "&segundo_nombre=" + segundo_nombre + "&primer_apellido=" + primer_apellido + "&segundo_apellido=" + segundo_apellido + "&fecha_nacimiento=" + fecha + "&estado=" + estado;
+    actualizarTrabajadorPorID() {
+        const url = urlTotal + this.actualizarTrabajador;
         return url;
     }
 
-    eliminarTrabajadorPorID(id, estado) {
-        const url = urlTotal + this.eliminarTrabajador + "?id_Trabajador=" + id + "&estado=" + estado;
+    eliminarTrabajadorPorID() {
+        const url = urlTotal + this.eliminarTrabajador;
         return url;
     }
 }
@@ -251,18 +258,18 @@ export class Usuarios {
         return url; 
     }
 
-    crearNuevoUsuario(nombre, clave, id_Trabajador, id_Rol, estado) {
-        const url = urlTotal + this.nuevoUsuario + "?nombre=" + nombre + "&clave=" + clave + "&id_Trabajador=" + id_Trabajador + "&id_Rol=" + id_Rol + "&estado=" + estado;
+    crearNuevoUsuario() {
+        const url = urlTotal + this.nuevoUsuario;
         return url;
     }
 
-    actualizarUsuarioPorID(id, nombre, clave, id_Trabajador, id_Rol, estado) {
-        const url = urlTotal + this.nuevoUsuario + "?id_Usuario=" + id + "&nombre=" + nombre + "&clave=" + clave + "&id_Trabajador=" + id_Trabajador + "&id_Rol=" + id_Rol + "&estado=" + estado;
+    actualizarUsuarioPorID() {
+        const url = urlTotal + this.actualizarUsuario;
         return url;
     }
 
-    eliminarUsuarioPorID(id, estado) {
-        const url = urlTotal + this.eliminarUsuario + "?id_Usuario=" + id + "&estado=" + estado;
+    eliminarUsuarioPorID() {
+        const url = urlTotal + this.eliminarUsuario;
         return url;
     }
 }
@@ -296,18 +303,18 @@ export class Turnos {
         return url;
     }
 
-    crearNuevoTurno(id_Tipo_Consulta, id_Sucursal, fecha, numero_Turno, estado) {
-        const url = urlTotal + this.nuevoTurno + "?id_Tipo_Consulta=" + id_Tipo_Consulta + "&id_Sucursal=" + id_Sucursal + "&fecha=" + fecha + "&numero_turno=" + numero_Turno + "&estado=" +  estado;
+    crearNuevoTurno() {
+        const url = urlTotal + this.nuevoTurno;
         return url; 
     }
 
-    actualizarTurnoPorID(id_Tipo_Consulta, id_Sucursal, fecha, numero_Turno, estado) {
-        const url = urlTotal + this.nuevoTurno + "?id_Tipo_Consulta=" + id_Tipo_Consulta + "&id_Sucursal=" + id_Sucursal + "&fecha=" + fecha + "&numero_turno=" + numero_Turno + "&estado=" +  estado;
+    actualizarTurnoPorID() {
+        const url = urlTotal + this.actualizarTurno;
         return url; 
     }
 
-    actualizarEstadoTurnoPorID(id, estado) {
-        const url = urlTotal + this.actualizarEstadoTurno + "?id_Turno=" + id + "&estado=" + estado;
+    actualizarEstadoTurnoPorID() {
+        const url = urlTotal + this.actualizarEstadoTurno;
         return url;
     }
 }
@@ -317,10 +324,9 @@ export class Atenciones {
     listaDatosAtenciones = "/ListaDatosAtenciones";
     atencionIDTurno = "/AtencionIDTurno?id=";
     atencionesEstado = "/AtencionesEstado?estado=";
-    nuevaAtencionPOST = "/NuevaAtencion/nueva";
-    nuevaAtencionGET = "/NuevaAtencion";
+    nuevaAtencionPOST = "/NuevaAtencionPOST";
     actualizarAtencion = "/ActualizarAtencion";
-    eliminarAtencion = "/EliminaAtencion";
+    eliminarAtencion = "/EliminarAtencion";
 
     listarAtenciones() {
         const url = urlTotal + this.listaAtenciones;
@@ -347,18 +353,13 @@ export class Atenciones {
         return url;
     }
 
-    crearNuevaAtencionGET(id_Turno, id_Usuario, ventanilla, estado, fecha_Inicio, fecha_Final, observacion) {
-        const url = urlTotal + this.nuevaAtencionGET + "?id_Turno=" + id_Turno + "&id_Usuario=" + id_Usuario + "&ventanilla=" + ventanilla + "&estado=" + estado + "&fecha_Inicio=" + fecha_Inicio + "&fecha_Final=" + fecha_Final + "&observacion=" + observacion;
+    actualizarAtencionPorID() {
+        const url = urlTotal + this.actualizarAtencion;
         return url; 
     }
 
-    actualizarAtencionPorID(id_Atencion, id_Turno, id_Usuario,  ventanilla, estado, fecha_Inicio, fecha_Final, observacion) {
-        const url = urlTotal + this.actualizarAtencion + "?id_Atencion=" + id_Atencion + "&id_Turno=" + id_Turno + "&id_Usuario=" + id_Usuario + "&ventanilla=" + ventanilla + "&estado=" + estado + "&fecha_Inicio=" + fecha_Inicio + "&fecha_Final=" + fecha_Final + "&observacion=" + observacion;
-        return url; 
-    }
-
-    eliminarAtencionPorID(id_Turno) {
-        const url = urlTotal + "?id_Turno=" + id_Turno;
+    eliminarAtencionPorID() {
+        const url = urlTotal + this.eliminarAtencion;
         return url;
     }
 }
@@ -368,6 +369,7 @@ export class Calificaciones {
     calificacionID = "/CalificacionIDAtencion?id=";
     nuevaCalificacion = "/NuevaCalificacion";
     actualizarCalificacion = "/ActualizarCalificacion";
+    eliminarCalificacion = "/EliminarCalificacion";
 
     listarCalificaciones() {
         const url = urlTotal + this.listaCalificaciones;
@@ -379,13 +381,18 @@ export class Calificaciones {
         return url;
     }
 
-    crearNuevaCalificacion(id_Atencion, pregunta_1, pregunta_2, pregunta_3, valoracion) {
-        const url = urlTotal + this.nuevaCalificacion + "?id_Atencion=" + id_Atencion + "&pregunta_1=" + pregunta_1 + "&pregunta_2=" + pregunta_2 + "&pregunta_3=" + pregunta_3 + "&valoracion=" + valoracion;
+    crearNuevaCalificacion() {
+        const url = urlTotal + this.nuevaCalificacion;
         return url;
     }
 
-    actualizarCalificacionPorID(id_Atencion, pregunta_1, pregunta_2, pregunta_3, valoracion) {
-        const url = urlTotal + this.actualizarCalificacion + "?id_Atencion=" + id_Atencion + "&pregunta_1=" + pregunta_1 + "&pregunta_2=" + pregunta_2 + "&pregunta_3=" + pregunta_3 + "&valoracion=" + valoracion;
+    actualizarCalificacionPorID() {
+        const url = urlTotal + this.actualizarCalificacion;
+        return url;
+    }
+
+    eliminarCalificacionPorID() {
+        const url = urlTotal + this.eliminarCalificacion;
         return url;
     }
 }
@@ -406,13 +413,13 @@ export class Contadores {
         return url; 
     }
 
-    crearContador(id_Sucursal, id_Consulta) {
-        const url = urlTotal + this.nuevoContador + "?id_Sucursal=" + id_Sucursal + "&id_Tipo_Consulta=" + id_Consulta + "&numero=1";
+    crearContador() {
+        const url = urlTotal + this.nuevoContador;
         return url; 
     }
 
-    actualizarContadorNumero(id_Sucursal, id_Consulta, numero) {
-        const url = urlTotal + this.actualizarContador + "?id_Sucursal=" + id_Sucursal + "&id_Tipo_Consulta=" + id_Consulta + "&numero=" + numero;
+    actualizarContadorNumero() {
+        const url = urlTotal + this.actualizarContador;
         return url; 
     }
 }
