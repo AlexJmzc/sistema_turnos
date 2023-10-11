@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./clientes.css";
 import login from "../../assets/img/Logo.png";
-import { Sucursales, Tipos_Consulta, Turnos, Contadores } from "../../api/urls";
+import { Sucursales, Tipos_Consulta, Turnos, Contadores, head } from "../../api/urls";
 import axios from "axios";
 
 const Clientes = () => {
@@ -107,13 +107,8 @@ const Clientes = () => {
           //!FECHA
           let fecha = new Date();
 
-          const anio = fecha.getFullYear();
-          const mes = String(fecha.getMonth() + 1).padStart(2, '0'); 
-          const dia = String(fecha.getDate()).padStart(2, '0'); 
-          const hora = String(fecha.getHours()).padStart(2, '0'); 
-          const minutos = String(fecha.getMinutes()).padStart(2, '0'); 
-
-          const fechaFormateada = `${anio}-${mes}-${dia} ${hora}:${minutos}`;
+          const milisegundos = fecha.getTime();
+          const fechaFormateada = `\/Date(${milisegundos})\/`;
 
           let ticket = {
             id_Consulta: idConsulta,
@@ -141,17 +136,39 @@ const Clientes = () => {
     modal.style.display = "none";
   }
 
+  //TODO: CERRAR MODAL TURNO ALERTA
+  const abrirModalTurno = (e) => {
+    let modal = document.getElementById("modalTurnoGenerado");
+
+    modal.style.display = "block";
+ }
+
+   //TODO: CERRAR MODAL TURNO ALERTA
+   const closeModalTurno = (e) => {
+      let modal = document.getElementById("modalTurnoGenerado");
+
+      modal.style.display = "none";
+   }
+
   //TODO: SACAR TURNO
   const sacarTurno = (e) => {
-    const urlNuevoTurno = turnos.crearNuevoTurno(turno.id_Consulta, turno.id_Sucursal, turno.fecha, turno.numeroTurno, turno.estado);
+    const nuevoTurno = {
+      id_Tipo_Consulta: turno.id_Consulta,
+      id_Sucursal: turno.id_Sucursal,
+      fecha: turno.fecha,
+      numero_turno: turno.numeroTurno,
+      estado: turno.estado
+    }
+
+    const urlNuevoTurno = turnos.crearNuevoTurno();
   
     axios
-    .get(urlNuevoTurno)
+    .post(urlNuevoTurno, nuevoTurno , head)
     .then((response) => {
       incrementarContador(turno.id_Consulta, turno.id_Sucursal, turno.num);
-      alert("Turno generado");
-      //imprimirTicket();
       closeModal();
+      abrirModalTurno();
+      //imprimirTicket();
     })
     .catch((error) => {
       console.error("Error fetching data:", error);
@@ -213,6 +230,18 @@ const Clientes = () => {
                 <div className="botones">
                   <button className="btnCancelar" onClick={closeModal}>CANCELAR</button>
                   <button className="btnAceptar" onClick={sacarTurno}>ACEPTAR</button>
+                </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="modalTurnoGenerado" className="modal">
+          <div className="modal-content">
+            <span className="close" on onClick={closeModalTurno}>&times;</span>
+            <div className="modal-body">
+                <header>TURNO GENERADO</header>
+                <div className="botones">
+                  <button className="btnAceptar" onClick={closeModalTurno}>ACEPTAR</button>
                 </div>
             </div>
           </div>
