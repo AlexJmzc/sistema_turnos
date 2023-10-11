@@ -35,3 +35,59 @@ td {
     column-gap: 40px;
 }
 
+.btnAceptar {
+    background: #1AAB8A;
+    color: #fff;
+    border: none;
+    position: relative;
+    height: 40px;
+    font-size: 15px;
+    padding: 0 2em;
+    cursor: pointer;
+    transition: 800ms ease all;
+    outline: none;
+}
+
+.btnAceptar:hover {
+    background: #fff;
+    color: #1AAB8A;
+}
+
+.btnAceptar:before,
+.btnAceptar:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 2px;
+    width: 0;
+    background: #1AAB8A;
+    transition: 400ms ease all;
+}
+
+.btnAceptar:after {
+    right: inherit;
+    top: inherit;
+    left: 0;
+    bottom: 0;
+}
+
+.btnAceptar:hover:before,
+.btnAceptar:hover:after {
+    width: 100%;
+    transition: 800ms ease all;
+}
+
+.btnNuevo {
+    background: #12de0e;
+    color: #fff;
+    border: none;
+    position: relative;
+    height: 40px;
+    font-size: 15px;
+    padding: 0 2em;
+    cursor: pointer;
+    transition: 800ms ease all;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
