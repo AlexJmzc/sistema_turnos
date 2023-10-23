@@ -10,6 +10,10 @@ import TablaAdminAtenciones from './components/admin/tablas/tablaAdminAtenciones
 import Pantalla from './components/pantalla/pantalla';
 import Calificacion from './components/calificacion/calificacion';
 import TablaAdminTrabajadores from './components/admin/tablas/tablaAdminTrabajadores/tablaAdminTrabajadores';
+import TablaAdminSucursales from './components/admin/tablas/tablaAdminSucursales/tablaAdminSucursales';
+import TablaAdminRoles from './components/admin/tablas/tablaAdminRoles/tablaAdminRoles';
+import TablaAdminConsultas from './components/admin/tablas/tablaAdminConsultas/tablaAdminConsultas';
+import TablaAdminTurnos from './components/admin/tablas/tablaAdminTurnos/tablaAdminTurnos';
 
 function App() {
   return (
@@ -25,6 +29,10 @@ function App() {
             <Route path='/tablaAdminUsuarios' Component={TablaAdminUsuarios}/>
             <Route path='/tablaAdminAtenciones' Component={TablaAdminAtenciones}/>
             <Route path='/tablaAdminTrabajadores' Component={TablaAdminTrabajadores}/>
+            <Route path='/tablaAdminSucursales' Component={TablaAdminSucursales}/>
+            <Route path='/tablaAdminRoles' Component={TablaAdminRoles}/>
+            <Route path='/tablaAdminConsultas' Component={TablaAdminConsultas}/>
+            <Route path='/tablaAdminTurnos' Component={TablaAdminTurnos}/>
         </Routes>
     </BrowserRouter>
   );
