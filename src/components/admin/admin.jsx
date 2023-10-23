@@ -53,10 +53,6 @@ const Admin = () => {
             navigate('../tablaAdminTurnos');
             break;
 
-        case 'estados':
-            navigate('../tablaAdminEstados');
-            break;
-
         default:
 
     }
@@ -88,7 +84,7 @@ const Admin = () => {
           <div className='item'>
               <p>TURNOS</p>
               <img src={login} alt=''></img>
-              <button className='Btn' id='turnos'>VER</button>
+              <button className='Btn' id='turnos' onClick={redirect}>VER</button>
           </div>
 
           <div className='item'>
@@ -106,25 +102,19 @@ const Admin = () => {
           <div className='item'>
               <p>SUCURSALES</p>
               <img src={login} alt=''></img>
-              <button className='Btn' id='sucursales'>VER</button>
+              <button className='Btn' id='sucursales' onClick={redirect}>VER</button>
           </div>
 
           <div className='item'>
               <p>TIPOS DE CONSULTA</p>
               <img src={login} alt=''></img>
-              <button className='Btn' id='consultas'>VER</button>
+              <button className='Btn' id='consultas' onClick={redirect}>VER</button>
           </div>
 
           <div className='item'>
               <p>ROLES</p>
               <img src={login} alt=''></img>
-              <button className='Btn' id='roles'>VER</button>
-          </div>
-
-          <div className='item'>
-              <p>ESTADOS</p>
-              <img src={login} alt=''></img>
-              <button className='Btn' id='estados'>VER</button>
+              <button className='Btn' id='roles' onClick={redirect}>VER</button>
           </div>
       </div>
     </div>
