@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Atenciones, Calificaciones, Sucursales } from "../../api/urls";
+import { Atenciones, Calificaciones, Sucursales, head } from "../../api/urls";
 import axios from "axios";
 import "./calificacion.css";
 
@@ -17,11 +17,13 @@ const Calificacion = () => {
   const [sucursal, setSucursal] = useState([]);
   const [arrayNumeros, setArray] = useState([]);
   const [atenciones, setAtenciones] = useState([]);
+  const [atencionCalificada, setAtencionCalificada] = useState({});
 
   //? VALORES PREGUNTAS
   const [pregunta1, setPregunta1] = useState(0);
   const [pregunta2, setPregunta2] = useState(0);
   const [pregunta3, setPregunta3] = useState(0);
+  const [pregunta4, setPregunta4] = useState(0);
 
   //! URL
   const apiUrlSucursal = sucursalesAPI.sucursalPorID(sucursalID);
@@ -97,10 +99,7 @@ const Calificacion = () => {
 
     if (atenciones.length > 0) {
       const ate = atenciones.filter((item) => {
-        return (
-          item.Sucursal === suc &&
-          item.Ventanilla === ven
-        );
+        return item.Sucursal === suc && item.Ventanilla === ven;
       });
 
       if (ate[0] != null) {
@@ -120,10 +119,7 @@ const Calificacion = () => {
 
     if (atenciones.length > 0) {
       const ate = atenciones.filter((item) => {
-        return (
-          item.Sucursal === suc &&
-          item.Ventanilla === ven
-        );
+        return item.Sucursal === suc && item.Ventanilla === ven;
       });
 
       if (ate[ate.length - 1] != null) {
@@ -163,50 +159,66 @@ const Calificacion = () => {
   const cambioPregunta1 = (e) => {
     const valor = parseInt(e.target.value);
     setPregunta1(valor);
-  }
+  };
 
   const cambioPregunta2 = (e) => {
     const valor = parseInt(e.target.value);
     setPregunta2(valor);
-  }
+  };
 
   const cambioPregunta3 = (e) => {
     const valor = parseInt(e.target.value);
     setPregunta3(valor);
-  }
+  };
+
+  const cambioPregunta4 = (e) => {
+    const valor = parseInt(e.target.value);
+    setPregunta4(valor);
+  };
 
   const siguiente1 = () => {
-    if(pregunta1 === 0) {
-      alert("Debe seleccionar una opción")
+    if (pregunta1 === 0) {
+      alert("Debe seleccionar una opción");
     } else {
       let formulario1 = document.getElementById("Form1");
       let formulario2 = document.getElementById("Form2");
       formulario1.style.display = "none";
       formulario2.style.display = "flex";
     }
-  }
+  };
 
   const siguiente2 = () => {
-    if(pregunta2 === 0) {
-      alert("Debe seleccionar una opción")
+    if (pregunta2 === 0) {
+      alert("Debe seleccionar una opción");
     } else {
       let formulario2 = document.getElementById("Form2");
       let formulario3 = document.getElementById("Form3");
       formulario2.style.display = "none";
       formulario3.style.display = "flex";
     }
-  }
+  };
 
   const siguiente3 = () => {
-    if(pregunta3 === 0) {
-      alert("Debe seleccionar una opción")
+    if (pregunta3 === 0) {
+      alert("Debe seleccionar una opción");
     } else {
       let formulario3 = document.getElementById("Form3");
       let formulario4 = document.getElementById("Form4");
       formulario3.style.display = "none";
       formulario4.style.display = "flex";
     }
-  }
+  };
+
+  const siguiente4 = () => {
+    if (pregunta4 === 0) {
+      alert("Debe seleccionar una opción");
+    } else {
+      let formulario4 = document.getElementById("Form4");
+      let formulario5 = document.getElementById("Form5");
+      formulario4.style.display = "none";
+      formulario5.style.display = "block";
+    }
+  };
 
   const reinicio = () => {
     setPregunta1(0);
@@ -216,24 +228,40 @@ const Calificacion = () => {
     let formulario4 = document.getElementById("Form4");
     formulario4.style.display = "none";
     formulario1.style.display = "flex";
-  }
+  };
 
   //TODO: ACTUALIZAR CALIFICACION DE ATENCION
   const calificar = (e) => {
     const calificacion = e.target.textContent.toUpperCase();
     const atencion = obtenerAtencion();
 
-    const urlActualizarCalificacion = calificacionesAPI.actualizarCalificacionPorID(atencion.ID_Atencion, pregunta1, pregunta2, pregunta3, calificacion);
-    if(atencion.ID_Atencion !== undefined) {
+    if (atencion.ID_Atencion === atencionCalificada.ID_Atencion) {
+      alert("Esta atención ya fue calificada");
+      reinicio();
+    } else {
+      const nuevaAtencion = {
+        id_Atencion: atencion.ID_Atencion,
+        pregunta_1: pregunta1,
+        pregunta_2: pregunta2,
+        pregunta_3: pregunta3,
+        pregunta_4: pregunta4,
+        valoracion: calificacion,
+      };
+
+      const urlActualizarCalificacion =
+        calificacionesAPI.actualizarCalificacionPorID();
+      if (atencion.ID_Atencion !== undefined) {
         axios
-        .get(urlActualizarCalificacion)
-        .then((response) => {
-          reinicio();
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
+          .put(urlActualizarCalificacion, nuevaAtencion, head)
+          .then((response) => {
+            setAtencionCalificada(response.data.ActualizarCalificacionResult);
+            reinicio();
+          })
+          .catch((error) => {
+            console.error("Error fetching data:", error);
+          });
       }
+    }
   };
 
   return (
@@ -242,120 +270,307 @@ const Calificacion = () => {
         <h1>TURNO {obtenerNumeroTurno()}</h1>
         <div className="Formulario">
           <div className="Form1" id="Form1">
-            <h1>¿Está satisfecho con esta atención?</h1>
-            <h1>Valore con 1 el valor más bajo y 5 el valor más alto</h1>
+            <h1>
+              ¿El trato del personal del balcón de servicios e información con
+              los usuarios es cordial y respetuoso?
+            </h1>
+            <h1>
+              Valore teniendo en cuenta 1 Nada Satisfecho y 5 Muy Satisfecho
+            </h1>
             <div className="check">
               <div className="round-checkbox">
-                <input type="radio" name="opcion" id="opcion1" value="1" onChange={cambioPregunta1}/>
+                <input
+                  type="radio"
+                  name="opcion"
+                  id="opcion1"
+                  value="1"
+                  onChange={cambioPregunta1}
+                />
                 <label>
                   <span>1</span>
                 </label>
               </div>
               <div className="round-checkbox">
-                <input type="radio" name="opcion" id="opcion2" value="2" onChange={cambioPregunta1}/>
+                <input
+                  type="radio"
+                  name="opcion"
+                  id="opcion2"
+                  value="2"
+                  onChange={cambioPregunta1}
+                />
                 <label>
                   <span>2</span>
                 </label>
               </div>
               <div className="round-checkbox">
-                <input type="radio" name="opcion" id="opcion3" value="3" onChange={cambioPregunta1}/>
+                <input
+                  type="radio"
+                  name="opcion"
+                  id="opcion3"
+                  value="3"
+                  onChange={cambioPregunta1}
+                />
                 <label>
                   <span>3</span>
                 </label>
               </div>
               <div className="round-checkbox">
-                <input type="radio" name="opcion" id="opcion4" value="4" onChange={cambioPregunta1}/>
+                <input
+                  type="radio"
+                  name="opcion"
+                  id="opcion4"
+                  value="4"
+                  onChange={cambioPregunta1}
+                />
                 <label>
                   <span>4</span>
                 </label>
               </div>
               <div className="round-checkbox">
-                <input type="radio" name="opcion" id="opcion5" value="5" onChange={cambioPregunta1}/>
+                <input
+                  type="radio"
+                  name="opcion"
+                  id="opcion5"
+                  value="5"
+                  onChange={cambioPregunta1}
+                />
                 <label>
                   <span>5</span>
                 </label>
               </div>
             </div>
-            <button className="btnBuena" onClick={siguiente1}>Siguiente</button>
+            <button className="btnBuena" onClick={siguiente1}>
+              Siguiente
+            </button>
           </div>
 
           <div className="Form2" id="Form2">
-            <h1>¿El agente mostró conocimiento sobre el tema?</h1>
-            <h1>Valore con 1 el valor más bajo y 5 el valor más alto</h1>
+            <h1>
+              ¿Es adecuado el tiempo de espera para ser atendido en el balcón de
+              servicios e información?
+            </h1>
+            <h1>
+              Valore teniendo en cuenta 1 Nada Satisfecho y 5 Muy Satisfecho
+            </h1>
             <div className="check">
               <div className="round-checkbox">
-                <input type="radio" name="opcion" id="opcion1" value="1" onClick={cambioPregunta2}/>
+                <input
+                  type="radio"
+                  name="opcion"
+                  id="opcion1"
+                  value="1"
+                  onClick={cambioPregunta2}
+                />
                 <label>
                   <span>1</span>
                 </label>
               </div>
               <div className="round-checkbox">
-                <input type="radio" name="opcion" id="opcion2" value="2" onClick={cambioPregunta2}/>
+                <input
+                  type="radio"
+                  name="opcion"
+                  id="opcion2"
+                  value="2"
+                  onClick={cambioPregunta2}
+                />
                 <label>
                   <span>2</span>
                 </label>
               </div>
               <div className="round-checkbox">
-                <input type="radio" name="opcion" id="opcion3" value="3" onClick={cambioPregunta2}/>
+                <input
+                  type="radio"
+                  name="opcion"
+                  id="opcion3"
+                  value="3"
+                  onClick={cambioPregunta2}
+                />
                 <label>
                   <span>3</span>
                 </label>
               </div>
               <div className="round-checkbox">
-                <input type="radio" name="opcion" id="opcion4" value="4" onClick={cambioPregunta2}/>
+                <input
+                  type="radio"
+                  name="opcion"
+                  id="opcion4"
+                  value="4"
+                  onClick={cambioPregunta2}
+                />
                 <label>
                   <span>4</span>
                 </label>
               </div>
               <div className="round-checkbox">
-                <input type="radio" name="opcion" id="opcion5" value="5" onClick={cambioPregunta2}/>
+                <input
+                  type="radio"
+                  name="opcion"
+                  id="opcion5"
+                  value="5"
+                  onClick={cambioPregunta2}
+                />
                 <label>
                   <span>5</span>
                 </label>
               </div>
             </div>
-            <button className="btnBuena" onClick={siguiente2}>Siguiente</button>
+            <button className="btnBuena" onClick={siguiente2}>
+              Siguiente
+            </button>
           </div>
 
           <div className="Form3" id="Form3">
-            <h1>¿El tiempo fue adecuado?</h1>
-            <h1>Valore con 1 el valor más bajo y 5 el valor más alto</h1>
+            <h1>
+              ¿El personal del balcón de servicios e información que atiende sus
+              requerimientos o reclamos, muestra estar capacitado para brindarle
+              soluciones?
+            </h1>
+            <h1>
+              Valore teniendo en cuenta 1 Nada Satisfecho y 5 Muy Satisfecho
+            </h1>
             <div className="check">
               <div className="round-checkbox">
-                <input type="radio" name="opcion" id="opcion1" value="1" onChange={cambioPregunta3}/>
+                <input
+                  type="radio"
+                  name="opcion"
+                  id="opcion1"
+                  value="1"
+                  onChange={cambioPregunta3}
+                />
                 <label>
                   <span>1</span>
                 </label>
               </div>
               <div className="round-checkbox">
-                <input type="radio" name="opcion" id="opcion2" value="2" onChange={cambioPregunta3}/>
+                <input
+                  type="radio"
+                  name="opcion"
+                  id="opcion2"
+                  value="2"
+                  onChange={cambioPregunta3}
+                />
                 <label>
                   <span>2</span>
                 </label>
               </div>
               <div className="round-checkbox">
-                <input type="radio" name="opcion" id="opcion3" value="3" onChange={cambioPregunta3}/>
+                <input
+                  type="radio"
+                  name="opcion"
+                  id="opcion3"
+                  value="3"
+                  onChange={cambioPregunta3}
+                />
                 <label>
                   <span>3</span>
                 </label>
               </div>
               <div className="round-checkbox">
-                <input type="radio" name="opcion" id="opcion4" value="4" onChange={cambioPregunta3}/>
+                <input
+                  type="radio"
+                  name="opcion"
+                  id="opcion4"
+                  value="4"
+                  onChange={cambioPregunta3}
+                />
                 <label>
                   <span>4</span>
                 </label>
               </div>
               <div className="round-checkbox">
-                <input type="radio" name="opcion" id="opcion5" value="5" onChange={cambioPregunta3}/>
+                <input
+                  type="radio"
+                  name="opcion"
+                  id="opcion5"
+                  value="5"
+                  onChange={cambioPregunta3}
+                />
                 <label>
                   <span>5</span>
                 </label>
               </div>
             </div>
-            <button className="btnBuena" onClick={siguiente3}>Siguiente</button>
+            <button className="btnBuena" onClick={siguiente3}>
+              Siguiente
+            </button>
           </div>
 
           <div className="Form4" id="Form4">
+            <h1>
+              ¿Se le informa adecuadamente cuanto tiempo tomará la atención del
+              trámite solicitado?
+            </h1>
+            <h1>
+              Valore teniendo en cuenta 1 Nada Satisfecho y 5 Muy Satisfecho
+            </h1>
+            <div className="check">
+              <div className="round-checkbox">
+                <input
+                  type="radio"
+                  name="opcion"
+                  id="opcion1"
+                  value="1"
+                  onChange={cambioPregunta4}
+                />
+                <label>
+                  <span>1</span>
+                </label>
+              </div>
+              <div className="round-checkbox">
+                <input
+                  type="radio"
+                  name="opcion"
+                  id="opcion2"
+                  value="2"
+                  onChange={cambioPregunta4}
+                />
+                <label>
+                  <span>2</span>
+                </label>
+              </div>
+              <div className="round-checkbox">
+                <input
+                  type="radio"
+                  name="opcion"
+                  id="opcion3"
+                  value="3"
+                  onChange={cambioPregunta4}
+                />
+                <label>
+                  <span>3</span>
+                </label>
+              </div>
+              <div className="round-checkbox">
+                <input
+                  type="radio"
+                  name="opcion"
+                  id="opcion4"
+                  value="4"
+                  onChange={cambioPregunta4}
+                />
+                <label>
+                  <span>4</span>
+                </label>
+              </div>
+              <div className="round-checkbox">
+                <input
+                  type="radio"
+                  name="opcion"
+                  id="opcion5"
+                  value="5"
+                  onChange={cambioPregunta4}
+                />
+                <label>
+                  <span>5</span>
+                </label>
+              </div>
+            </div>
+            <button className="btnBuena" onClick={siguiente4}>
+              Siguiente
+            </button>
+          </div>
+
+          <div className="Form5" id="Form5">
             <h1>Califica esta atención</h1>
             <button className="btnBuena" onClick={calificar}>
               BUENA
