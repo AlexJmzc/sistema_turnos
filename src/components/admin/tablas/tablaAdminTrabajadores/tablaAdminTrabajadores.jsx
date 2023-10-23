@@ -60,7 +60,7 @@ const TablaAdminTrabajadores = () => {
     }
   }, []);
 
-  //! CARGA DE USUARIOS, ESTADOS Y ROLES
+  //! CARGA DE TRABAJADORES Y ESTADOS
   useEffect(() => {
     fetchData(apiUrlTrabajadores, setTrabajadores);
     fetchData(apiUrlEstados, setEstados);
@@ -243,7 +243,7 @@ const TablaAdminTrabajadores = () => {
     modal.style.display = "none";
   };
 
-  //TODO: CERRAR MODAL DESACTIVAR
+  //TODO: CERRAR MODAL NUEVO
   const cerrarModalNuevo = () => {
     let modal = document.getElementById("modalNuevo");
     modal.style.display = "none";
@@ -354,7 +354,7 @@ const TablaAdminTrabajadores = () => {
 
   //TODO: GENERAR PDF
   const generatePDF = () => {
-    const datos = trabajadores.map((item) => [
+    const datos = datosTrabajadores.map((item) => [
       item.Cedula,
       item.Primer_Nombre +
         " " +
@@ -373,7 +373,7 @@ const TablaAdminTrabajadores = () => {
       format: [297, 210],
     });
 
-    doc.text("Tabla de Atenciones", 10, 10);
+    doc.text("Tabla de Trabajadores", 10, 10);
 
     const headers = ["Cedula", "Nombre", "Estado", "Fecha de Nacimiento"];
 
@@ -385,7 +385,7 @@ const TablaAdminTrabajadores = () => {
   //TODO: GENERAR EXCEL
   const generateExcel = () => {
     const wb = XLSX.utils.book_new();
-    const datos = trabajadores.map((item) => [
+    const datos = datosTrabajadores.map((item) => [
       item.Cedula,
       item.Primer_Nombre +
         " " +
@@ -439,6 +439,7 @@ const TablaAdminTrabajadores = () => {
           className="buscador"
           id="buscador"
           placeholder="Buscar"
+          value={cadena}
           onChange={cambioCadena}
         />
 
@@ -593,7 +594,7 @@ const TablaAdminTrabajadores = () => {
             &times;
           </span>
           <div className="modal-body">
-            <h1>Actualizar trabajador</h1>
+            <h1>Nuevo trabajador</h1>
             <label>Cedula:</label>
             <input
               type="text"

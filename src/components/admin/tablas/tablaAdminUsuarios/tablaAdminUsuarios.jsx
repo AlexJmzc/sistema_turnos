@@ -355,7 +355,7 @@ const TablaAdminUsuarios = () => {
       format: [297, 210],
     });
 
-    doc.text("Tabla de Atenciones", 10, 10);
+    doc.text("Tabla de Usuarios", 10, 10);
 
     const headers = ["Nombre", "Cedula", "Trabajador", "Rol", "Estado"];
 

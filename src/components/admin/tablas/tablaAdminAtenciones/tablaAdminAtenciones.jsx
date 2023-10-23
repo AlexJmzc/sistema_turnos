@@ -364,9 +364,19 @@ const TablaAdminAtenciones = () => {
           <div className="modal-content">
             <span className="close" on onClick={closeModalCalificacion}>&times;</span>
             <div className="modal-body">
-              <h1>¿Está satisfecho con esta atención?: {atencion.Pregunta_1}</h1>
-              <h1>¿El agente mostró conocimiento sobre el tema?: {atencion.Pregunta_2}</h1>
-              <h1>¿El tiempo fue adecuado?: {atencion.Pregunta_3}</h1>
+              <h1>¿El trato del personal del balcón de servicios e información con
+              los usuarios es cordial y respetuoso?: {atencion.Pregunta_1}
+              </h1>
+              <h1>¿Es adecuado el tiempo de espera para ser atendido en el balcón de
+              servicios e información?: {atencion.Pregunta_2}
+              </h1>
+              <h1>¿El personal del balcón de servicios e información que atiende sus
+              requerimientos o reclamos, muestra estar capacitado para brindarle
+              soluciones?: {atencion.Pregunta_3}
+              </h1>
+              <h1>¿Se le informa adecuadamente cuanto tiempo tomará la atención del
+              trámite solicitado?: {atencion.Pregunta_4}
+              </h1>
               <h1>Valoracion: {atencion.Valoracion}</h1>
             </div>
           </div>
