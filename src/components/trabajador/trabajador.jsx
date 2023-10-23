@@ -140,14 +140,6 @@ const Trabajador = () => {
 
     let fecha = new Date();
 
-    /*const anio = fecha.getFullYear();
-    const mes = String(fecha.getMonth() + 1).padStart(2, '0'); 
-    const dia = String(fecha.getDate()).padStart(2, '0'); 
-    const hora = String(fecha.getHours()).padStart(2, '0'); 
-    const minutos = String(fecha.getMinutes()).padStart(2, '0'); 
-
-    const fechaF = `${anio}-${mes}-${dia} ${hora}:${minutos}`;*/
-
     let ml = fecha.getTime();
 
     const fechaFormateada = `\/Date(${ml})\/`;
