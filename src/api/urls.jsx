@@ -1,7 +1,9 @@
 //const baseURL = "http://localhost:3014/";
-const baseURL = "http://localhost:4040/";
+//const baseURL = "http://localhost:4040/";
+const baseURL = "http://192.168.24.62/";
 
-const baseServicio = "ServiciosTurnos.svc";
+//const baseServicio = "ServiciosTurnos.svc";
+const baseServicio = "ConsultaTurnos/ServiciosTurnos.svc";
 
 const urlTotal = baseURL + baseServicio;
 
