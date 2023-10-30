@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import login from '../../assets/img/login.png';
+import calif from '../../assets/img/calificacion.png';
+import pantalla from '../../assets/img/pantalla.png';
 import logo from '../../assets/img/Logo.png';
 import ticket from '../../assets/img/ticket.png';
 import './home.css';
@@ -92,13 +94,13 @@ const Home = () => {
           </div>
 
           <div className='card'>
-              <img src={ticket} alt=''></img>  
-              <button className='Btn' id='calificacion' onClick={handleRedirect}>PANTALLA CALIFICACIÓN</button>
+              <img src={calif} alt=''></img>  
+              <button className='Btn' id='calificacion' onClick={handleRedirect}>CALIFICACIÓN</button>
           </div>
 
           <div className='card'>
-              <img src={ticket} alt=''></img>  
-              <button className='Btn' id='pantalla' onClick={handleRedirect}>PANTALLA ATENCIÓN</button>
+              <img src={pantalla} alt=''></img>  
+              <button className='Btn' id='pantalla' onClick={handleRedirect}>INFORMACIÓN</button>
           </div>
 
           <div className='card'>

@@ -1,13 +1,5 @@
-.Main {
-    text-align: center;
-    background: linear-gradient(60deg, rgba(84,58,183,1) 0%, rgba(0,172,193,1) 100%);
-    padding: 10px;
-    color: white;
-}
-
 .Main-formulario {
     min-height: 39vh;
-    margin-top: 40px;
 }
 
 
@@ -53,7 +45,7 @@ transform: translate(5px,5px);
 transition-duration: .3s;
 }
 
-input[type=text] {
+input {
 	appearance: none;
 	border: none;
 	outline: none;
@@ -68,7 +60,7 @@ input[type=text] {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 50px; 
+    gap: 30px; 
 }
 
 .formulario input {

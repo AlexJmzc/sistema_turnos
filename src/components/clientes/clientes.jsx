@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./clientes.css";
-import login from "../../assets/img/Logo.png";
+import boleto from "../../assets/img/boleto.png";
+import consulta from "../../assets/img/consulta.png";
 import { Sucursales, Tipos_Consulta, Turnos, Contadores, head } from "../../api/urls";
 import axios from "axios";
 
@@ -31,7 +32,7 @@ const Clientes = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, [tipos, apiUrlConsultas]);
+  }, []);
 
   //! CARGA DE SUCURSAL
   useEffect(() => {
@@ -43,7 +44,7 @@ const Clientes = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, [sucursal, apiUrlSucursal]);
+  }, []);
 
 
   //TODO: INCREMENTAR CONTADOR
@@ -203,7 +204,7 @@ const Clientes = () => {
         {tipos.map((tipo) => (
           <div className="item">
             <p id={tipo.ID_Tipo_Consulta}>{tipo.Nombre}</p>
-            <img src={login} alt=""></img>
+            <img src={boleto} alt=""></img>
             <button className="Btn" id={tipo.ID_Tipo_Consulta} onClick={showModal}>
               TURNO
             </button>
@@ -212,7 +213,7 @@ const Clientes = () => {
 
         <div className="item">
           <p>CONSULTA PLANILLA DE AGUA</p>
-          <img src={login} alt=""></img>
+          <img src={consulta} alt=""></img>
           <a href="http://186.42.184.58:8989/Consulta/consultar.aspx">
             <button className="Btn" id="planilla">
               CONSULTA

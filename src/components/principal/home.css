@@ -1,6 +1,6 @@
 .Main {
     text-align: center;
-    background: linear-gradient(60deg, rgba(84,58,183,1) 0%, rgba(0,172,193,1) 100%);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='1440' height='1200' preserveAspectRatio='none' viewBox='0 0 1440 1200'%3e%3cg mask='url(%26quot%3b%23SvgjsMask1105%26quot%3b)' fill='none'%3e%3crect width='1440' height='1200' x='0' y='0' fill='rgba(25%2c 78%2c 133%2c 1)'%3e%3c/rect%3e%3cpath d='M 0%2c591 C 72%2c507 216%2c182 360%2c171 C 504%2c160 576%2c541.2 720%2c536 C 864%2c530.8 936%2c191.8 1080%2c145 C 1224%2c98.2 1368%2c270.6 1440%2c302L1440 1200L0 1200z' fill='rgba(33%2c 119%2c 202%2c 1)'%3e%3c/path%3e%3cpath d='M 0%2c789 C 48%2c847.2 144%2c1112.2 240%2c1080 C 336%2c1047.8 384%2c652 480%2c628 C 576%2c604 624%2c918.8 720%2c960 C 816%2c1001.2 864%2c822 960%2c834 C 1056%2c846 1104%2c1043.4 1200%2c1020 C 1296%2c996.6 1392%2c777.6 1440%2c717L1440 1200L0 1200z' fill='%232264ab'%3e%3c/path%3e%3c/g%3e%3cdefs%3e%3cmask id='SvgjsMask1105'%3e%3crect width='1440' height='1200' fill='white'%3e%3c/rect%3e%3c/mask%3e%3c/defs%3e%3c/svg%3e");
     padding: 10px;
     color: white;
     height: 100vh;
@@ -24,7 +24,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgb(15, 15, 15);
+  background-color: rgb(5, 4, 5);
   border: none;
   color: white;
   font-weight: 600;
@@ -78,7 +78,6 @@ transition-duration: .3s;
 }
 
 .card img{
-  border-radius: 50%;
   width: 100px;
   height: 100px;
   margin-bottom: 20px;
