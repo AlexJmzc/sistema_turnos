@@ -12,103 +12,107 @@
 
 .btnResetear {
     width: 150px;
-    color:#fff;
-    border:none;
-    position:relative;
-    font-size:15px;
-    padding:0 2em;
-    cursor:pointer;
-    transition:800ms ease all;
-    outline:none;
+    color: #fff;
+    border: none;
+    position: relative;
+    font-size: 15px;
+    padding: 0 2em;
+    cursor: pointer;
+    transition: 800ms ease all;
+    outline: none;
     background-color: #fccf07;
 }
 
 .btnObservacion {
     width: 150px;
-    color:#fff;
-    border:none;
-    position:relative;
-    height:40px;
-    font-size:15px;
-    padding:0 2em;
+    color: #fff;
+    border: none;
+    position: relative;
+    height: 40px;
+    font-size: 15px;
+    padding: 0 2em;
     margin-right: 10px;
-    cursor:pointer;
-    transition:800ms ease all;
-    outline:none;
+    cursor: pointer;
+    transition: 800ms ease all;
+    outline: none;
     background-color: #cadf0d;
 }
 
 .btnCalificacion {
     width: 150px;
-    color:#fff;
-    border:none;
-    position:relative;
-    height:40px;
-    font-size:15px;
-    padding:0 2em;
+    color: #fff;
+    border: none;
+    position: relative;
+    height: 40px;
+    font-size: 15px;
+    padding: 0 2em;
     margin-right: 10px;
-    cursor:pointer;
-    transition:800ms ease all;
-    outline:none;
+    cursor: pointer;
+    transition: 800ms ease all;
+    outline: none;
     background-color: #38ab1b;
 }
 
-.btnObservacion:hover{
-    background:#fff;
-    color:#cadf0d;
+.btnObservacion:hover {
+    background: #fff;
+    color: #cadf0d;
 }
 
-.btnCalificacion:hover{
-    background:#fff;
-    color:#38ab1b;
+.btnCalificacion:hover {
+    background: #fff;
+    color: #38ab1b;
 }
 
-.btnObservacion:before,.btnObservacion:after{
-    content:'';
-    position:absolute;
-    top:0;
-    right:0;
-    height:2px;
-    width:0;
+.btnObservacion:before,
+.btnObservacion:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 2px;
+    width: 0;
     background: #cadf0d;
-    transition:400ms ease all;
+    transition: 400ms ease all;
 }
 
-.btnCalificacion:before,.btnCalificacion:after{
-    content:'';
-    position:absolute;
-    top:0;
-    right:0;
-    height:2px;
-    width:0;
+.btnCalificacion:before,
+.btnCalificacion:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 2px;
+    width: 0;
     background: #38ab1b;
-    transition:400ms ease all;
+    transition: 400ms ease all;
 }
 
-.btnObservacion:after{
-    right:inherit;
-    top:inherit;
-    left:0;
-    bottom:0;
+.btnObservacion:after {
+    right: inherit;
+    top: inherit;
+    left: 0;
+    bottom: 0;
 }
 
-.btnCalificacion:after{
-    right:inherit;
-    top:inherit;
-    left:0;
-    bottom:0;
+.btnCalificacion:after {
+    right: inherit;
+    top: inherit;
+    left: 0;
+    bottom: 0;
 }
 
-.btnObservacion:hover:before,.btnObservacion:hover:after{
-    width:100%;
-    transition:800ms ease all;
+.btnObservacion:hover:before,
+.btnObservacion:hover:after {
+    width: 100%;
+    transition: 800ms ease all;
 }
 
-.btnCalificacion:hover:before,.btnCalificacion:hover:after{
-    width:100%;
-    transition:800ms ease all;
+.btnCalificacion:hover:before,
+.btnCalificacion:hover:after {
+    width: 100%;
+    transition: 800ms ease all;
 }
-  
+
 .reportes button {
     width: 100px;
 }
@@ -149,4 +153,76 @@
 
 .slide_diagonal:hover {
     box-shadow: inset 400px 50px 0 0 #1e3364;
+}
+
+.pag {
+    display: flex;
+    justify-content: center;
+}
+
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+
+.pagination li {
+    margin-right: 5px;
+}
+
+.pagination li a {
+    display: block;
+    padding: 10px 15px;
+    background-color: #f5f5f5;
+    text-decoration: none;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.pagination li.active a {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.pagination .prev,
+.pagination .next {
+    margin-right: 10px;
+}
+
+.pagination .prev a {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.pagination .next a {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.pagination .prev.disabled a,
+.pagination .next.disabled a {
+    background-color: #ccc;
+    color: #888;
+    cursor: not-allowed;
+}
+
+.pagination .break-me a {
+    display: block;
+    background-color: #f5f5f5;
+    color: #333;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.pagination .page-text {
+    margin-right: 5px;
+}
+
+.pagination li a:hover {
+    background-color: #007bff;
+    color: #fff;
 }

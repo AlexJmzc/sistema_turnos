@@ -13,6 +13,7 @@ import {
   Tipos_Consulta,
   Turnos,
 } from "../../../../api/urls";
+import ReactPaginate from 'react-paginate';
 
 const TablaAdminTurnos = () => {
   //? INSTANCIAS DE LAS CLASES DE LAS API
@@ -27,7 +28,6 @@ const TablaAdminTurnos = () => {
   const [estados, setEstados] = useState([]);
   const [consultas, setConsultas] = useState([]);
   const [datosTurnos, setDatosTurnos] = useState([""]);
-  const [turno, setTurno] = useState({});
 
   //? VALORES DE BUSQUEDA
   const [sucursal, setSucursal] = useState(0);
@@ -36,6 +36,13 @@ const TablaAdminTurnos = () => {
   const [cadena, setCadena] = useState("");
   const [fechaInicial, setFechaInicial] = useState(null);
   const [fechaFinal, setFechaFinal] = useState(null);
+
+  //? VARIABLES PAGINADOR
+  const itemsPorPagina = 10;
+  const [numeroPagina, setNumeroPagina] = useState(0);
+  const startIndex = numeroPagina * itemsPorPagina;
+  const endIndex = startIndex + itemsPorPagina;
+  const dispData = datosTurnos.slice(startIndex, endIndex);
 
   //! URL
   const apiUrlTurnos = turnosAPI.listarTurnos();
@@ -218,6 +225,10 @@ const TablaAdminTurnos = () => {
     setFechaFinal(date);
   };
 
+  const handlePageChange = (e) => {
+    setNumeroPagina(e.selected);
+  }
+
   //TODO: LOGOUT
   const logout = () => {
     localStorage.removeItem("token");
@@ -388,7 +399,7 @@ const TablaAdminTurnos = () => {
           </tr>
         </thead>
         <tbody>
-          {datosTurnos.map((item, index) => (
+          {dispData.map((item, index) => (
             <tr>
               <td>{index + 1}</td>
               <td>{item.Numero_Turno}</td>
@@ -400,6 +411,22 @@ const TablaAdminTurnos = () => {
           ))}
         </tbody>
       </table>
+
+      <div className='pag'>
+            <ReactPaginate
+              previousLabel={"Anterior"}
+              nextLabel={"Siguiente"}
+              breakLabel={"..."}
+              breakClassName={"break-me"}
+              pageCount={Math.ceil(datosTurnos.length / itemsPorPagina)}
+              marginPagesDisplayed={2}
+              pageRangeDisplayed={5}
+              onPageChange={handlePageChange}
+              containerClassName={"pagination"}
+              subContainerClassName={"pages pagination"}
+              activeClassName={"active"}
+            />
+        </div>
 
       <div className="reportes">
         <button className="btnPDF slide_diagonal" onClick={generatePDF}>

@@ -8,6 +8,7 @@ import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import './tablaAdminAtenciones.css';
 import { Sucursales, Atenciones } from '../../../../api/urls';
+import ReactPaginate from 'react-paginate';
 
 const TablaAdminAtenciones = () => {
   //? INSTANCIAS DE LAS CLASES DE LAS API
@@ -26,6 +27,13 @@ const TablaAdminAtenciones = () => {
   const [cadena, setCadena] = useState('');
   const [fechaInicial, setFechaInicial] = useState(null);
   const [fechaFinal, setFechaFinal] = useState(null);
+
+  //? VARIABLES PAGINADOR
+  const itemsPorPagina = 10;
+  const [numeroPagina, setNumeroPagina] = useState(0);
+  const startIndex = numeroPagina * itemsPorPagina;
+  const endIndex = startIndex + itemsPorPagina;
+  const dispData = datosAtenciones.slice(startIndex, endIndex);
 
   //! URL
   const apiUrlAtenciones = atencionesAPI.listarDatosAtenciones();
@@ -195,6 +203,10 @@ const TablaAdminAtenciones = () => {
     setFechaFinal(date);
   };
 
+  const handlePageChange = (e) => {
+    setNumeroPagina(e.selected);
+  }
+
   //TODO: LOGOUT
   const logout = () => {
     localStorage.removeItem("token");
@@ -338,7 +350,7 @@ const TablaAdminAtenciones = () => {
                 </tr>
             </thead>
             <tbody>
-            {datosAtenciones.map((item, index) => (
+            {dispData.map((item, index) => (
                     <tr>
                         <td>{index + 1}</td>
                         <td>{item.Numero_Turno}</td>
@@ -362,7 +374,6 @@ const TablaAdminAtenciones = () => {
 
         <div id="modalCalificacion" className="modal">
           <div className="modal-content">
-            <span className="close" on onClick={closeModalCalificacion}>&times;</span>
             <div className="modal-body">
               <h1>¿El trato del personal del balcón de servicios e información con
               los usuarios es cordial y respetuoso?: <br />
@@ -382,17 +393,36 @@ const TablaAdminAtenciones = () => {
                   {atencion.Pregunta_4 || 0}
               </h1>
               <h1>Valoracion: {atencion.Valoracion}</h1>
+              <button className='btnLogout' onClick={closeModalCalificacion}>
+                CERRAR
+              </button>
             </div>
           </div>
         </div>
 
         <div id="modalObservacion" className="modal">
           <div className="modal-content">
-            <span className="close" on onClick={closeModalObservacion}>&times;</span>
             <div className="modal-body">
               <h1>Observación: {atencion.Observacion}</h1>
+              <button className='btnLogout' onClick={closeModalObservacion}>CERRAR</button>
             </div>
           </div>
+        </div>
+
+        <div className='pag'>
+            <ReactPaginate
+              previousLabel={"Anterior"}
+              nextLabel={"Siguiente"}
+              breakLabel={"..."}
+              breakClassName={"break-me"}
+              pageCount={Math.ceil(datosAtenciones.length / itemsPorPagina)}
+              marginPagesDisplayed={2}
+              pageRangeDisplayed={5}
+              onPageChange={handlePageChange}
+              containerClassName={"pagination"}
+              subContainerClassName={"pages pagination"}
+              activeClassName={"active"}
+            />
         </div>
 
         <div className="reportes">
