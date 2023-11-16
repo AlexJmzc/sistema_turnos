@@ -132,29 +132,6 @@ const Calificacion = () => {
     }
   };
 
-  //TODO: OBTENER LA FECHA Y HORA
-  const obtenerHora = (f) => {
-    if (f) {
-      const match = f.match(/\/Date\((\d+)([+-]\d{4})\)\//);
-
-      if (match) {
-        const timestamp = parseInt(match[1], 10);
-        const timeZoneOffset = -5 * 60 * 60;
-
-        const date = new Date(timestamp + timeZoneOffset);
-
-        const fechaFormateada = `${date.getFullYear()}-${String(
-          date.getMonth() + 1
-        ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")} ${String(
-          date.getHours()
-        ).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}:00`;
-
-        return fechaFormateada;
-      }
-    } else {
-      return 1;
-    }
-  };
 
   const cambioPregunta1 = (e) => {
     const valor = parseInt(e.target.value);
@@ -224,9 +201,10 @@ const Calificacion = () => {
     setPregunta1(0);
     setPregunta2(0);
     setPregunta3(0);
+    setPregunta4(0);
     let formulario1 = document.getElementById("Form1");
-    let formulario4 = document.getElementById("Form4");
-    formulario4.style.display = "none";
+    let formulario5 = document.getElementById("Form5");
+    formulario5.style.display = "none";
     formulario1.style.display = "flex";
   };
 
@@ -282,11 +260,11 @@ const Calificacion = () => {
                 <input
                   type="radio"
                   name="opcion"
-                  id="opcion1"
+                  id="opcion11"
                   value="1"
                   onChange={cambioPregunta1}
                 />
-                <label>
+                <label for="opcion11">
                   <span>1</span>
                 </label>
               </div>
@@ -294,11 +272,11 @@ const Calificacion = () => {
                 <input
                   type="radio"
                   name="opcion"
-                  id="opcion2"
+                  id="opcion12"
                   value="2"
                   onChange={cambioPregunta1}
                 />
-                <label>
+                <label for="opcion12">
                   <span>2</span>
                 </label>
               </div>
@@ -306,11 +284,11 @@ const Calificacion = () => {
                 <input
                   type="radio"
                   name="opcion"
-                  id="opcion3"
+                  id="opcion13"
                   value="3"
                   onChange={cambioPregunta1}
                 />
-                <label>
+                <label for="opcion13">
                   <span>3</span>
                 </label>
               </div>
@@ -318,11 +296,11 @@ const Calificacion = () => {
                 <input
                   type="radio"
                   name="opcion"
-                  id="opcion4"
-                  value="4"
+                  id="opcion14"
+                  value="14"
                   onChange={cambioPregunta1}
                 />
-                <label>
+                <label for="opcion14">
                   <span>4</span>
                 </label>
               </div>
@@ -330,11 +308,11 @@ const Calificacion = () => {
                 <input
                   type="radio"
                   name="opcion"
-                  id="opcion5"
-                  value="5"
+                  id="opcion15"
+                  value="15"
                   onChange={cambioPregunta1}
                 />
-                <label>
+                <label for="opcion15">
                   <span>5</span>
                 </label>
               </div>
@@ -357,11 +335,11 @@ const Calificacion = () => {
                 <input
                   type="radio"
                   name="opcion"
-                  id="opcion1"
+                  id="opcion21"
                   value="1"
                   onClick={cambioPregunta2}
                 />
-                <label>
+                <label for="opcion21">
                   <span>1</span>
                 </label>
               </div>
@@ -369,11 +347,11 @@ const Calificacion = () => {
                 <input
                   type="radio"
                   name="opcion"
-                  id="opcion2"
+                  id="opcion22"
                   value="2"
                   onClick={cambioPregunta2}
                 />
-                <label>
+                <label for="opcion22">
                   <span>2</span>
                 </label>
               </div>
@@ -381,11 +359,11 @@ const Calificacion = () => {
                 <input
                   type="radio"
                   name="opcion"
-                  id="opcion3"
+                  id="opcion23"
                   value="3"
                   onClick={cambioPregunta2}
                 />
-                <label>
+                <label for="opcion23">
                   <span>3</span>
                 </label>
               </div>
@@ -393,11 +371,11 @@ const Calificacion = () => {
                 <input
                   type="radio"
                   name="opcion"
-                  id="opcion4"
+                  id="opcion24"
                   value="4"
                   onClick={cambioPregunta2}
                 />
-                <label>
+                <label for="opcion24">
                   <span>4</span>
                 </label>
               </div>
@@ -405,11 +383,11 @@ const Calificacion = () => {
                 <input
                   type="radio"
                   name="opcion"
-                  id="opcion5"
+                  id="opcion25"
                   value="5"
                   onClick={cambioPregunta2}
                 />
-                <label>
+                <label for="opcion25">
                   <span>5</span>
                 </label>
               </div>
@@ -433,11 +411,11 @@ const Calificacion = () => {
                 <input
                   type="radio"
                   name="opcion"
-                  id="opcion1"
+                  id="opcion31"
                   value="1"
                   onChange={cambioPregunta3}
                 />
-                <label>
+                <label for="opcion31">
                   <span>1</span>
                 </label>
               </div>
@@ -445,11 +423,11 @@ const Calificacion = () => {
                 <input
                   type="radio"
                   name="opcion"
-                  id="opcion2"
+                  id="opcion32"
                   value="2"
                   onChange={cambioPregunta3}
                 />
-                <label>
+                <label for="opcion32">
                   <span>2</span>
                 </label>
               </div>
@@ -457,11 +435,11 @@ const Calificacion = () => {
                 <input
                   type="radio"
                   name="opcion"
-                  id="opcion3"
+                  id="opcion33"
                   value="3"
                   onChange={cambioPregunta3}
                 />
-                <label>
+                <label for="opcion33">
                   <span>3</span>
                 </label>
               </div>
@@ -469,11 +447,11 @@ const Calificacion = () => {
                 <input
                   type="radio"
                   name="opcion"
-                  id="opcion4"
+                  id="opcion34"
                   value="4"
                   onChange={cambioPregunta3}
                 />
-                <label>
+                <label for="opcion34">
                   <span>4</span>
                 </label>
               </div>
@@ -481,11 +459,11 @@ const Calificacion = () => {
                 <input
                   type="radio"
                   name="opcion"
-                  id="opcion5"
+                  id="opcion35"
                   value="5"
                   onChange={cambioPregunta3}
                 />
-                <label>
+                <label for="opcion35">
                   <span>5</span>
                 </label>
               </div>
@@ -508,11 +486,11 @@ const Calificacion = () => {
                 <input
                   type="radio"
                   name="opcion"
-                  id="opcion1"
+                  id="opcion41"
                   value="1"
                   onChange={cambioPregunta4}
                 />
-                <label>
+                <label for="opcion41">
                   <span>1</span>
                 </label>
               </div>
@@ -520,11 +498,11 @@ const Calificacion = () => {
                 <input
                   type="radio"
                   name="opcion"
-                  id="opcion2"
+                  id="opcion42"
                   value="2"
                   onChange={cambioPregunta4}
                 />
-                <label>
+                <label for="opcion42">
                   <span>2</span>
                 </label>
               </div>
@@ -532,11 +510,11 @@ const Calificacion = () => {
                 <input
                   type="radio"
                   name="opcion"
-                  id="opcion3"
+                  id="opcion43"
                   value="3"
                   onChange={cambioPregunta4}
                 />
-                <label>
+                <label for="opcion43">
                   <span>3</span>
                 </label>
               </div>
@@ -544,11 +522,11 @@ const Calificacion = () => {
                 <input
                   type="radio"
                   name="opcion"
-                  id="opcion4"
+                  id="opcion44"
                   value="4"
                   onChange={cambioPregunta4}
                 />
-                <label>
+                <label for="opcion44">
                   <span>4</span>
                 </label>
               </div>
@@ -556,11 +534,11 @@ const Calificacion = () => {
                 <input
                   type="radio"
                   name="opcion"
-                  id="opcion5"
+                  id="opcion45"
                   value="5"
                   onChange={cambioPregunta4}
                 />
-                <label>
+                <label for="opcion45">
                   <span>5</span>
                 </label>
               </div>
@@ -572,15 +550,17 @@ const Calificacion = () => {
 
           <div className="Form5" id="Form5">
             <h1>Califica esta atención</h1>
-            <button className="btnBuena" onClick={calificar}>
-              BUENA
-            </button>
-            <button className="btnRegular" onClick={calificar}>
-              REGULAR
-            </button>
-            <button className="btnMala" onClick={calificar}>
-              MALA
-            </button>
+            <div className="botonesCal">
+              <button className="btnBuena" onClick={calificar}>
+                BUENA
+              </button>
+              <button className="btnRegular" onClick={calificar}>
+                REGULAR
+              </button>
+              <button className="btnMala" onClick={calificar}>
+                MALA
+              </button>
+            </div>
           </div>
         </div>
       </div>

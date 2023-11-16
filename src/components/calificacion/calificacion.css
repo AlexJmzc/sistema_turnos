@@ -12,7 +12,7 @@
 }
 
 .Formulario {
-  height: 100vh;
+  height: fit-content;
   margin-top: -20px;
 }
 
@@ -32,18 +32,37 @@
   margin-bottom: 30px;
 }
 
-.round-radio input[type="radio"] {
+.round-checkbox input[type="radio"] {
   display: none;
+}
+
+.round-checkbox input[type="radio"] + label::before {
+  content: ''; 
+  outline: none;
+  display: inline-block;
+  width: 20px; 
+  height: 20px; 
+  border: 2px solid #00ddff; 
+  border-radius: 50%; 
+  margin-right: 5px; 
+}
+
+
+.round-checkbox input[type="radio"]:checked + label::before {
+  background-color: #00ddff; 
 }
 
 .round-checkbox {
   display: inline-block;
-  margin-right: 30px;
+  margin-right: 60px;
 }
+
+
 
 span {
   font-size: 20px;
   margin-left: 5px;
+  position: fixed;
 }
 
 .Form2 {
@@ -83,8 +102,23 @@ span {
   overflow: auto;
 }
 
-.Form4 button {
+.Form5 {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+.Form5 button {
+  margin-top: 90px;
   width: auto;
+  margin-right: 10px;
 }
 
 .modal-content {

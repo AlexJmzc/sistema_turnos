@@ -2,8 +2,15 @@ import React, { useEffect, useState } from "react";
 import "./clientes.css";
 import boleto from "../../assets/img/boleto.png";
 import consulta from "../../assets/img/consulta.png";
-import { Sucursales, Tipos_Consulta, Turnos, Contadores, head } from "../../api/urls";
+import {
+  Sucursales,
+  Tipos_Consulta,
+  Turnos,
+  Contadores,
+  head,
+} from "../../api/urls";
 import axios from "axios";
+//import printJS from 'print-js';
 
 const Clientes = () => {
   //? INSTANCIAS DE LAS CLASES DE LAS APIS
@@ -13,9 +20,9 @@ const Clientes = () => {
   const contadores = new Contadores();
 
   //? CONSTANTES DE LA VENTANA
-  const [ selectedValue ] = localStorage.getItem("sucursal");
+  const [selectedValue] = localStorage.getItem("sucursal");
   const [tipos, setTipos] = useState([""]);
-  const [turno , setTurno] = useState({});
+  const [turno, setTurno] = useState({});
   const [sucursal, setSucursal] = useState(null);
 
   //!URL API
@@ -46,16 +53,20 @@ const Clientes = () => {
       });
   }, []);
 
-
   //TODO: INCREMENTAR CONTADOR
   function incrementarContador(id_Consulta, id_Sucursal, numero) {
     let nuevoNumero = numero + 1;
-    const url = contadores.actualizarContadorNumero(id_Sucursal, id_Consulta, nuevoNumero);
-      axios
-      .get(url)
-      .then((response) => {
-          
-      })
+    const url = contadores.actualizarContadorNumero();
+
+    const contador = {
+      id_Sucursal: id_Sucursal,
+      id_Tipo_Consulta: id_Consulta,
+      numero: nuevoNumero
+    }
+
+    axios
+      .put(url, contador, head)
+      .then((response) => {})
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
@@ -65,34 +76,39 @@ const Clientes = () => {
   async function getContador(id_Consulta, id_Sucursal) {
     let contador = {};
     const urlGetContador = contadores.contadorPorID(id_Sucursal, id_Consulta);
-    const urlNuevoContador = contadores.crearContador(id_Sucursal, id_Consulta);
+    const urlNuevoContador = contadores.crearContador();
     try {
       const response = await axios.get(urlGetContador);
       contador = response.data;
-  
+
       if (contador.ID_Sucursal === 0) {
-        const nuevoContadorResponse = await axios.get(urlNuevoContador);
+        const nuevo = {
+          id_Sucursal: id_Sucursal,
+          id_Tipo_Consulta: id_Consulta,
+          numero: 1
+        }
+
+        const nuevoContadorResponse = await axios.post(urlNuevoContador, nuevo, head);
         contador = nuevoContadorResponse.data;
       }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
-  
+
     return contador;
   }
 
   //TODO: ABRIR MODAL
   const showModal = (e) => {
-
     let idConsulta = e.target.id;
 
-    let parrafos = document.getElementsByTagName('p');
+    let parrafos = document.getElementsByTagName("p");
 
     let tipoConsulta = "";
 
     for (const parrafo of parrafos) {
       if (parrafo.id === idConsulta) {
-          tipoConsulta = parrafo.textContent;
+        tipoConsulta = parrafo.textContent;
       }
     }
 
@@ -100,11 +116,11 @@ const Clientes = () => {
       .then((contador) => {
         let n = contador.Numero;
 
-        let numero = tipoConsulta.substring(0,2) + n;
+        let numero = tipoConsulta.substring(0, 2) + n;
 
         let modal = document.getElementById("myModal");
 
-        if(sucursal != null) {
+        if (sucursal != null) {
           //!FECHA
           let fecha = new Date();
 
@@ -119,8 +135,8 @@ const Clientes = () => {
             sucursal: sucursal.Nombre,
             tipo: tipoConsulta,
             num: n,
-            numeroTurno: numero
-          }
+            numeroTurno: numero,
+          };
           setTurno(ticket);
           modal.style.display = "block";
         }
@@ -128,28 +144,28 @@ const Clientes = () => {
       .catch((error) => {
         console.error(error);
       });
-  }
+  };
 
   //TODO: CERRAR MODAL
   const closeModal = (e) => {
     let modal = document.getElementById("myModal");
 
     modal.style.display = "none";
-  }
+  };
 
   //TODO: CERRAR MODAL TURNO ALERTA
   const abrirModalTurno = (e) => {
     let modal = document.getElementById("modalTurnoGenerado");
 
     modal.style.display = "block";
- }
+  };
 
-   //TODO: CERRAR MODAL TURNO ALERTA
-   const closeModalTurno = (e) => {
-      let modal = document.getElementById("modalTurnoGenerado");
+  //TODO: CERRAR MODAL TURNO ALERTA
+  const closeModalTurno = (e) => {
+    let modal = document.getElementById("modalTurnoGenerado");
 
-      modal.style.display = "none";
-   }
+    modal.style.display = "none";
+  };
 
   //TODO: SACAR TURNO
   const sacarTurno = (e) => {
@@ -158,40 +174,53 @@ const Clientes = () => {
       id_Sucursal: turno.id_Sucursal,
       fecha: turno.fecha,
       numero_turno: turno.numeroTurno,
-      estado: turno.estado
-    }
+      estado: turno.estado,
+    };
 
     const urlNuevoTurno = turnos.crearNuevoTurno();
-  
+
     axios
-    .post(urlNuevoTurno, nuevoTurno , head)
-    .then((response) => {
-      incrementarContador(turno.id_Consulta, turno.id_Sucursal, turno.num);
-      closeModal();
-      abrirModalTurno();
-      //imprimirTicket();
-    })
-    .catch((error) => {
-      console.error("Error fetching data:", error);
-    });
-  }
+      .post(urlNuevoTurno, nuevoTurno, head)
+      .then((response) => {
+        incrementarContador(turno.id_Consulta, turno.id_Sucursal, turno.num);
+        closeModal();
+        abrirModalTurno();
+        imprimirTicket();
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  };
 
   //TODO: IMPRESION DE TICKET
   function imprimirTicket() {
     const contenidoTicket = `
                 <div style="text-align: center;">
-                    <h1>EP-EMAPA-A</h1>
+                    <h1>EMAPA</h1>
                     <p>${turno.sucursal}</p>
                     <hr>
-                    <p>TURNO:</p>
-                    <ul>
-                        <li>${turno.tipo}</li>
-                        <li>${turno.numeroTurno}</li>
-                    </ul>
+                    <p>TURNO</p>
+                    <p>${turno.tipo}</p>
+                    <p>${turno.numeroTurno}</p>
                 </div>
             `;
 
-        //printJS({ printable: contenidoTicket, type: 'html' });
+    const windowObj = window.open("", "", "width=100,height=100");
+
+    windowObj.document.open();
+    windowObj.document.write(`
+          <html>
+            <head>
+              <title>Ticket</title>
+            </head>
+            <body>
+              ${contenidoTicket}
+            </body>
+          </html>
+        `);
+    windowObj.document.close();
+    windowObj.print();
+    windowObj.close();
   }
 
   return (
@@ -205,7 +234,11 @@ const Clientes = () => {
           <div className="item">
             <p id={tipo.ID_Tipo_Consulta}>{tipo.Nombre}</p>
             <img src={boleto} alt=""></img>
-            <button className="Btn" id={tipo.ID_Tipo_Consulta} onClick={showModal}>
+            <button
+              className="Btn"
+              id={tipo.ID_Tipo_Consulta}
+              onClick={showModal}
+            >
               TURNO
             </button>
           </div>
@@ -223,27 +256,31 @@ const Clientes = () => {
 
         <div id="myModal" className="modal">
           <div className="modal-content">
-            <span className="close" on onClick={closeModal}>&times;</span>
             <div className="modal-body">
-                <header>SUCURSAL {turno.sucursal}</header>
-                <p id="">SACAR TURNO PARA {turno.tipo}</p>
-                <p id="">TURNO NÚMERO {turno.numeroTurno}</p>
-                <div className="botones">
-                  <button className="btnCancelar" onClick={closeModal}>CANCELAR</button>
-                  <button className="btnAceptar" onClick={sacarTurno}>ACEPTAR</button>
-                </div>
+              <header>SUCURSAL {turno.sucursal}</header>
+              <p id="">SACAR TURNO PARA {turno.tipo}</p>
+              <p id="">TURNO NÚMERO {turno.numeroTurno}</p>
+              <div className="botones">
+                <button className="btnCancelar" onClick={closeModal}>
+                  CANCELAR
+                </button>
+                <button className="btnAceptar" onClick={sacarTurno}>
+                  ACEPTAR
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
         <div id="modalTurnoGenerado" className="modal">
           <div className="modal-content">
-            <span className="close" on onClick={closeModalTurno}>&times;</span>
             <div className="modal-body">
-                <header>TURNO GENERADO</header>
-                <div className="botones">
-                  <button className="btnAceptar" onClick={closeModalTurno}>ACEPTAR</button>
-                </div>
+              <header>TURNO GENERADO</header>
+              <div className="botones">
+                <button className="btnAceptar" onClick={closeModalTurno}>
+                  ACEPTAR
+                </button>
+              </div>
             </div>
           </div>
         </div>
