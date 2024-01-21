@@ -87,24 +87,23 @@ const Login = () => {
 
     const user = response.data;
 
-    if(user.Clave != null) {
+    if(user.ID_Rol !== 0) {
       if(user.ID_Rol === 1) {
         setUsuario(user);
-        localStorage.setItem("user", JSON.stringify(user.ID_Usuario));
-        localStorage.setItem("token", JSON.stringify(user.Token));
-        localStorage.setItem("rol", JSON.stringify(user.ID_Rol));
+        localStorage.setItem("user", user.ID_Usuario);
+        localStorage.setItem("token", user.Token);
+        localStorage.setItem("rol", user.ID_Rol);
         Redireccion(user.ID_Rol);
       } else if(user.ID_Rol !== 1 && ventanilla === 0) {
         alert("Selecciona la ventanilla");
       } else {
         setUsuario(user);
         localStorage.setItem("user", user.ID_Usuario);
-        localStorage.setItem("token", JSON.stringify(user.Token));
+        localStorage.setItem("token", user.Token);
         localStorage.setItem("rol", user.ID_Rol);
         localStorage.setItem("ventanilla", ventanilla);
         Redireccion(user.ID_Rol);
       }
-        
     } else {
         alert('Usuario o contraseña incorrectos');
     }
@@ -121,7 +120,7 @@ const Login = () => {
         break;
 
       default:
-        navigate();
+        navigate('/');
     }
   }
 

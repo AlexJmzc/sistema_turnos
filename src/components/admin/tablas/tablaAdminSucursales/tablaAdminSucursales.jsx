@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Sucursales, Estados, head } from "../../../../api/urls";
+import { Sucursales, Estados, head, Usuarios } from "../../../../api/urls";
 import axios from "axios";
 import { useNavigate } from "react-router";
 import "./tablaAdminSucursales.css";
@@ -11,8 +11,10 @@ const TablaAdminSucursales = () => {
   //? INSTANCIAS DE LAS CLASES DE LAS API
   const sucursalesAPI = new Sucursales();
   const estadosAPI = new Estados();
+  const usuariosAPI = new Usuarios();
 
   //? VARIABLES DE LA VENTANA
+  const token = localStorage.getItem('token');
   const [sucursales, setSucursales] = useState([]);
   const [estados, setEstados] = useState([]);
   const [sucursal, setSucursal] = useState([]);
@@ -29,6 +31,7 @@ const TablaAdminSucursales = () => {
   //! URL
   const apiUrlSucursales = sucursalesAPI.listarSucursales();
   const apiUrlEstados = estadosAPI.listarEstados();
+  const apiUrlValidacionToken = usuariosAPI.validarToken(token, 'ADMIN');
 
   //! NAVEGACION
   const navigate = useNavigate();
@@ -45,20 +48,23 @@ const TablaAdminSucursales = () => {
 
   //! COMPROBACIÓN DE TOKEN Y ROL
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const rol = localStorage.getItem("rol");
-
-    if (token !== "" && rol === "1") {
-    } else {
-      navigate("/");
-    }
+    axios
+      .get(apiUrlValidacionToken, head)
+      .then((response) => {
+        if(!response.data) {
+          navigate('/');
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
   }, []);
 
   //! CARGA DE SUCURSALES Y ESTADOS
   useEffect(() => {
     fetchData(apiUrlSucursales, setSucursales);
     fetchData(apiUrlEstados, setEstados);
-  }, [sucursales]);
+  }, []);
 
   //! ACTUALIZACIÓN DE DATOS DE BUSQUEDA
   useEffect(() => {
@@ -175,6 +181,7 @@ const TablaAdminSucursales = () => {
         .put(sucursalesAPI.actualizarSucursalPorID(), suc, head)
         .then(() => {
           cerrarModalEditar();
+          window.location.reload();
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -222,6 +229,7 @@ const TablaAdminSucursales = () => {
       .put(sucursalesAPI.eliminarSucursalPorID(), datos, head)
       .then(() => {
         cerrarModalDesactivar();
+        window.location.reload();
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -260,6 +268,7 @@ const TablaAdminSucursales = () => {
         .then(() => {
           cerrarModalNuevo();
           resetear();
+          window.location.reload();
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -399,9 +408,6 @@ const TablaAdminSucursales = () => {
 
       <div id="modalEditar" className="modal">
         <div className="modal-content">
-          <span className="close" onClick={cerrarModalEditar}>
-            &times;
-          </span>
           <div className="modal-body">
             <h1>Actualizar sucursal</h1>
             <label>Nombre:</label>
@@ -424,33 +430,37 @@ const TablaAdminSucursales = () => {
               required
             />
             <br /> <br />
-            <button className="btnAceptar" onClick={actualizarSucursal}>
-              GUARDAR
-            </button>
+            <div className="btnModal">
+              <button className='btnCancelar' onClick={cerrarModalEditar}>
+                CERRAR
+              </button>
+              <button className="btnAceptar" onClick={actualizarSucursal}>
+                GUARDAR
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <div id="modalDesactivar" className="modal">
         <div className="modal-content">
-          <span className="close" onClick={cerrarModalDesactivar}>
-            &times;
-          </span>
           <div className="modal-body">
             <h1>{mensaje(sucursal)}</h1>
             <h1>{sucursal.Nombre}</h1>
-            <button className="btnAceptar" onClick={cambiarEstado}>
-              GUARDAR
-            </button>
+            <div className="btnModal">
+              <button className='btnCancelar' onClick={cerrarModalDesactivar}>
+                CERRAR
+              </button>
+              <button className="btnAceptar" onClick={cambiarEstado}>
+                GUARDAR
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <div id="modalNuevo" className="modal">
         <div className="modal-content">
-          <span className="close" onClick={cerrarModalNuevo}>
-            &times;
-          </span>
           <div className="modal-body">
             <h1>Nueva sucursal</h1>
             <label>Nombre:</label>
@@ -473,9 +483,14 @@ const TablaAdminSucursales = () => {
               required
             />
             <br /> <br />
-            <button className="btnAceptar" onClick={nuevaSucursal}>
-              GUARDAR
-            </button>
+            <div className="btnModal">
+              <button className='btnCancelar' onClick={cerrarModalNuevo}>
+                CERRAR
+              </button>
+              <button className="btnAceptar" onClick={nuevaSucursal}>
+                GUARDAR
+              </button>
+            </div>
           </div>
         </div>
       </div>

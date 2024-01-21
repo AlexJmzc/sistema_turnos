@@ -2,22 +2,31 @@ import React, { useEffect } from 'react';
 import login from '../../assets/img/login.png';
 import './admin.css';
 import { useNavigate } from 'react-router-dom';
+import { Usuarios, head } from '../../api/urls';
+import axios from 'axios';
 
 const Admin = () => {
+  const usuariosAPI = new Usuarios();
+
+  const token = localStorage.getItem('token');
+
+  const apiUrlValidacionToken = usuariosAPI.validarToken(token, 'ADMIN');
 
   //!Navegacion
   const navigate = useNavigate();
 
   //! COMPROBACIÓN DE TOKEN Y ROL
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const rol = localStorage.getItem("rol");
-
-    if(token !== "" && rol === "1") {
-      
-    } else {
-      navigate("../login");
-    }
+    axios
+      .get(apiUrlValidacionToken, head)
+      .then((response) => {
+        if(!response.data) {
+          navigate('/');
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
 
   }, [])
 

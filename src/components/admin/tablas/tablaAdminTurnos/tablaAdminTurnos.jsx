@@ -12,6 +12,8 @@ import {
   Sucursales,
   Tipos_Consulta,
   Turnos,
+  head,
+  Usuarios
 } from "../../../../api/urls";
 import ReactPaginate from 'react-paginate';
 
@@ -21,8 +23,10 @@ const TablaAdminTurnos = () => {
   const turnosAPI = new Turnos();
   const consultasAPI = new Tipos_Consulta();
   const estadosAPI = new Estados();
+  const usuariosAPI = new Usuarios();
 
   //? VARIABLES DE LA VENTANA
+  const token = localStorage.getItem('token');
   const [turnos, setTurnos] = useState([]);
   const [sucursales, setSucursales] = useState([]);
   const [estados, setEstados] = useState([]);
@@ -49,6 +53,7 @@ const TablaAdminTurnos = () => {
   const apiUrlSucursales = sucursalesAPI.listarSucursales();
   const apiUrlConsultas = consultasAPI.listarTiposConsulta();
   const apiUrlEstados = estadosAPI.listarEstados();
+  const apiUrlValidacionToken = usuariosAPI.validarToken(token, 'ADMIN');
 
   //! NAVEGACION
   const navigate = useNavigate();
@@ -59,27 +64,31 @@ const TablaAdminTurnos = () => {
       const data = await response.json();
       setData(data);
     } catch (error) {
-      console.error("Error al cargar la API:", error);
+      console.error("Error fetching data:", error);
     }
   };
 
-  //! COMPROBACIÓN DE TOKEN Y ROL
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const rol = localStorage.getItem("rol");
-
-    if (token !== "" && rol === "1") {
-    } else {
-      navigate("/");
-    }
-  }, []);
-
-  //! CARGA DE TURNOS, ESTADOS
+  //! CARGA DE TURNOS, ESTADOS Y SUCURSALES
   useEffect(() => {
     fetchData(apiUrlTurnos, setTurnos);
     fetchData(apiUrlEstados, setEstados);
     fetchData(apiUrlSucursales, setSucursales);
-  }, [turnos, estados]);
+  }, []);
+
+  //! COMPROBACIÓN DE TOKEN Y ROL
+  useEffect(() => {
+    axios
+      .get(apiUrlValidacionToken, head)
+      .then((response) => {
+        if(!response.data) {
+          navigate('/');
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+
+  }, [])
 
   //! CARGA LOS TIPOS DE CONSULTA
   useEffect(() => {
@@ -91,7 +100,7 @@ const TablaAdminTurnos = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, [consultas, apiUrlConsultas]);
+  }, []);
 
   //! ACTUALIZACIÓN DE DATOS DE BUSQUEDA
   useEffect(() => {
@@ -132,7 +141,7 @@ const TablaAdminTurnos = () => {
       );
     });
 
-    setDatosTurnos(filtered);
+    setDatosTurnos(filtered.slice().reverse());
   }, [turnos, sucursal, cadena, consulta, fechaInicial, fechaFinal, estado]);
 
   //TODO: OBTENER SUCURSAL
@@ -276,8 +285,8 @@ const TablaAdminTurnos = () => {
       item.Numero_Turno,
       obtenerEstado(item.Estado),
       obtenerFecha(item.Fecha),
-      obtenerConsulta(item.Fecha),
-      obtenerSucursal(item.Sucursal),
+      obtenerConsulta(item.ID_Tipo_Consulta),
+      obtenerSucursal(item.ID_Sucursal),
     ]);
 
     const headers = [
@@ -314,7 +323,7 @@ const TablaAdminTurnos = () => {
   return (
     <div className="Main">
       <div className="Main-titulo">
-        <h1>Tabla de administración de atenciones</h1>
+        <h1>Tabla de administración de turnos</h1>
         <button className="btnLogout" onClick={logout}>
           Cerrar Sesión
         </button>

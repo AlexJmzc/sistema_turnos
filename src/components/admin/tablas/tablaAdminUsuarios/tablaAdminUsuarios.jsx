@@ -7,7 +7,7 @@ import {
   Trabajadores,
   Estados,
   Roles,
-  head,
+  head
 } from "../../../../api/urls";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -21,6 +21,7 @@ const TablaAdminUsuarios = () => {
   const rolesAPI = new Roles();
 
   //? VARIABLES DE LA VENTANA
+  const token = localStorage.getItem('token');
   const [datosUsuario, setDatosUsuario] = useState([""]);
   const [trabajadores, setTrabajadores] = useState([""]);
   const [usuarios, setUsuarios] = useState([""]);
@@ -42,6 +43,7 @@ const TablaAdminUsuarios = () => {
   const apiUrlTrabajadores = trabajadoresAPI.listarTrabajadores();
   const apiUrlEstados = estadosAPI.listarEstados();
   const apiUrlRoles = rolesAPI.listarRoles();
+  const apiUrlValidacionToken = usuariosAPI.validarToken(token, 'ADMIN');
 
   //! NAVEGACION
   const navigate = useNavigate();
@@ -58,13 +60,16 @@ const TablaAdminUsuarios = () => {
 
   //! COMPROBACIÓN DE TOKEN Y ROL
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const rol = localStorage.getItem("rol");
-
-    if (token !== "" && rol === "1") {
-    } else {
-      navigate("/");
-    }
+    axios
+      .get(apiUrlValidacionToken, head)
+      .then((response) => {
+        if(!response.data) {
+          navigate('/');
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
   }, []);
 
   //! CARGA DE USUARIOS, ESTADOS Y ROLES
@@ -72,7 +77,7 @@ const TablaAdminUsuarios = () => {
     fetchData(apiUrlUsuarios, setUsuarios);
     fetchData(apiUrlEstados, setEstados);
     fetchData(apiUrlRoles, setRoles);
-  }, [usuarios, estados, roles]);
+  }, []);
 
   //! ACTUALIZACIÓN DE DATOS DE BUSQUEDA
   useEffect(() => {
@@ -88,7 +93,7 @@ const TablaAdminUsuarios = () => {
       return matchesRol && matchesEstado && matchesCadena;
     });
 
-    setDatosUsuario(filtered);
+    setDatosUsuario(filtered.slice().reverse());
   }, [usuarios, rol, estado, cadena]);
 
   //! CARGA LOS TRABAJADORES
@@ -101,7 +106,7 @@ const TablaAdminUsuarios = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, [trabajadores, apiUrlTrabajadores]);
+  }, []);
 
   //TODO: OBTENER TRABAJADOR
   const obtenerTrabajador = (id) => {
@@ -262,6 +267,7 @@ const TablaAdminUsuarios = () => {
       alert('La Clave no puede quedar vacia')
     } else {
       const usu = {
+        id_Usuario: usuario.ID_Usuario,
         nombre: nomUsu,
         clave: claveUsu,
         id_Trabajador: trabajador,
@@ -273,6 +279,7 @@ const TablaAdminUsuarios = () => {
       .put(usuariosAPI.actualizarUsuarioPorID(), usu, head)
       .then(() => {
         cerrarModalEditar();
+        window.location.reload();
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -300,6 +307,7 @@ const TablaAdminUsuarios = () => {
       .put(usuariosAPI.eliminarUsuarioPorID(), datos, head)
       .then(() => {
         cerrarModalDesactivar();
+        window.location.reload();
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -332,6 +340,7 @@ const TablaAdminUsuarios = () => {
         .post(usuariosAPI.crearNuevoUsuario(), usu, head)
         .then(() => {
           cerrarModalNuevo();
+          window.location.reload();
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -486,9 +495,6 @@ const TablaAdminUsuarios = () => {
 
       <div id="modalEditar" className="modal">
         <div className="modal-content">
-          <span className="close" onClick={cerrarModalEditar}>
-            &times;
-          </span>
           <div className="modal-body">
             <h1>Actualizar usuario</h1>
             <label>Nombre de Usuario:</label>
@@ -539,33 +545,37 @@ const TablaAdminUsuarios = () => {
               ))}
             </select>
             <br /> <br />
-            <button className="btnAceptar" onClick={actualizarUsuario}>
-              GUARDAR
-            </button>
+            <div className="btnModal">
+              <button className='btnCancelar' onClick={cerrarModalEditar}>
+                CERRAR
+              </button>
+              <button className="btnAceptar" onClick={actualizarUsuario}>
+                GUARDAR
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <div id="modalDesactivar" className="modal">
         <div className="modal-content">
-          <span className="close" onClick={cerrarModalDesactivar}>
-            &times;
-          </span>
           <div className="modal-body">
             <h1>{mensaje(usuario)}</h1>
             <h1>{usuario.Nombre}</h1>
-            <button className="btnAceptar" onClick={cambiarEstado}>
-              GUARDAR
-            </button>
+            <div className="btnModal">
+              <button className='btnCancelar' onClick={cerrarModalDesactivar}>
+                CERRAR
+              </button>
+              <button className="btnAceptar" onClick={cambiarEstado}>
+                GUARDAR
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <div id="modalNuevo" className="modal">
         <div className="modal-content">
-          <span className="close" onClick={cerrarModalNuevo}>
-            &times;
-          </span>
           <div className="modal-body">
             <h1>Crear nuevo usuario</h1>
             <label>Nombre de Usuario:</label>
@@ -613,9 +623,14 @@ const TablaAdminUsuarios = () => {
               ))}
             </select>
             <br /> <br />
-            <button className="btnAceptar" onClick={nuevoUsuario}>
-              GUARDAR
-            </button>
+            <div className="btnModal">
+              <button className='btnCancelar' onClick={cerrarModalNuevo}>
+                CERRAR
+              </button>
+              <button className="btnAceptar" onClick={nuevoUsuario}>
+                GUARDAR
+              </button>
+            </div>
           </div>
         </div>
       </div>

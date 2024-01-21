@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./tablaAdminTrabajadores.css";
-import { Trabajadores, Estados, head } from "../../../../api/urls";
+import { Trabajadores, Estados, head, Usuarios } from "../../../../api/urls";
 import { useNavigate } from "react-router";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -13,8 +13,10 @@ const TablaAdminTrabajadores = () => {
   //? INSTANCIAS DE LAS CLASES DE LAS API
   const trabajadoresAPI = new Trabajadores();
   const estadosAPI = new Estados();
+  const usuariosAPI = new Usuarios();
 
   //? VARIABLES DE LA VENTANA
+  const token = localStorage.getItem('token');
   const [trabajadores, setTrabajadores] = useState([]);
   const [estados, setEstados] = useState([]);
   const [trabajador, setTrabajador] = useState([]);
@@ -35,6 +37,7 @@ const TablaAdminTrabajadores = () => {
   //! URL
   const apiUrlTrabajadores = trabajadoresAPI.listarTrabajadores();
   const apiUrlEstados = estadosAPI.listarEstados();
+  const apiUrlValidacionToken = usuariosAPI.validarToken(token, 'ADMIN');
 
   //! NAVEGACION
   const navigate = useNavigate();
@@ -51,20 +54,23 @@ const TablaAdminTrabajadores = () => {
 
   //! COMPROBACIÓN DE TOKEN Y ROL
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const rol = localStorage.getItem("rol");
-
-    if (token !== "" && rol === "1") {
-    } else {
-      navigate("/");
-    }
+    axios
+      .get(apiUrlValidacionToken, head)
+      .then((response) => {
+        if(!response.data) {
+          navigate('/');
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
   }, []);
 
   //! CARGA DE TRABAJADORES Y ESTADOS
   useEffect(() => {
     fetchData(apiUrlTrabajadores, setTrabajadores);
     fetchData(apiUrlEstados, setEstados);
-  }, [trabajadores, estados]);
+  }, []);
 
   //! ACTUALIZACIÓN DE DATOS DE BUSQUEDA
   useEffect(() => {
@@ -81,7 +87,7 @@ const TablaAdminTrabajadores = () => {
       return matchesEstado && matchesCadena;
     });
 
-    setDatosTrabajadores(filtered);
+    setDatosTrabajadores(filtered.slice().reverse());
   }, [estado, cadena, trabajadores]);
 
   //TODO: OBTENER ESTADO
@@ -280,6 +286,7 @@ const TablaAdminTrabajadores = () => {
         .put(trabajadoresAPI.actualizarTrabajadorPorID(), tra, head)
         .then(() => {
           cerrarModalEditar();
+          window.location.reload();
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -307,6 +314,7 @@ const TablaAdminTrabajadores = () => {
       .put(trabajadoresAPI.eliminarTrabajadorPorID(), datos, head)
       .then(() => {
         cerrarModalDesactivar();
+        window.location.reload();
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -345,6 +353,7 @@ const TablaAdminTrabajadores = () => {
         .post(trabajadoresAPI.crearNuevoTrabajador(), tra, head)
         .then(() => {
           cerrarModalNuevo();
+          window.location.reload();
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -505,9 +514,6 @@ const TablaAdminTrabajadores = () => {
 
       <div id="modalEditar" className="modal">
         <div className="modal-content">
-          <span className="close" onClick={cerrarModalEditar}>
-            &times;
-          </span>
           <div className="modal-body">
             <h1>Actualizar trabajador</h1>
             <label>Cedula:</label>
@@ -563,36 +569,40 @@ const TablaAdminTrabajadores = () => {
             <label>Fecha de nacimiento:</label>
             <DatePicker selected={fecha} onChange={cambioFecha} />
             <br /> <br />
-            <button className="btnAceptar" onClick={actualizarTrabajador}>
-              GUARDAR
-            </button>
+            <div className="btnModal">
+              <button className='btnCancelar' onClick={cerrarModalEditar}>
+                CERRAR
+              </button>
+              <button className="btnAceptar" onClick={actualizarTrabajador}>
+                GUARDAR
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <div id="modalDesactivar" className="modal">
         <div className="modal-content">
-          <span className="close" onClick={cerrarModalDesactivar}>
-            &times;
-          </span>
           <div className="modal-body">
             <h1>{mensaje(trabajador)}</h1>
             <h1>
               {trabajador.Primer_Nombre} {trabajador.Segundo_Nombre}{" "}
               {trabajador.Primer_Apellido} {trabajador.Segundo_Apellido}
             </h1>
-            <button className="btnAceptar" onClick={cambiarEstado}>
-              GUARDAR
-            </button>
+            <div className="btnModal">
+              <button className='btnCancelar' onClick={cerrarModalDesactivar}>
+                CERRAR
+              </button>
+              <button className="btnAceptar" onClick={cambiarEstado}>
+                GUARDAR
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <div id="modalNuevo" className="modal">
         <div className="modal-content">
-          <span className="close" onClick={cerrarModalNuevo}>
-            &times;
-          </span>
           <div className="modal-body">
             <h1>Nuevo trabajador</h1>
             <label>Cedula:</label>
@@ -648,9 +658,14 @@ const TablaAdminTrabajadores = () => {
             <label>Fecha de nacimiento:</label>
             <DatePicker selected={fecha} onChange={cambioFecha} />
             <br /> <br />
-            <button className="btnAceptar" onClick={nuevoTrabajador}>
-              GUARDAR
-            </button>
+            <div className="btnModal">
+              <button className='btnCancelar' onClick={cerrarModalNuevo}>
+                CERRAR
+              </button>
+              <button className="btnAceptar" onClick={nuevoTrabajador}>
+                GUARDAR
+              </button>
+            </div>
           </div>
         </div>
       </div>

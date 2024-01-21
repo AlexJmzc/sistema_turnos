@@ -7,15 +7,18 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import './tablaAdminAtenciones.css';
-import { Sucursales, Atenciones } from '../../../../api/urls';
+import { Sucursales, Atenciones, Usuarios, head } from '../../../../api/urls';
 import ReactPaginate from 'react-paginate';
 
 const TablaAdminAtenciones = () => {
   //? INSTANCIAS DE LAS CLASES DE LAS API
   const sucursalesAPI = new Sucursales();
   const atencionesAPI = new Atenciones();
+  const usuariosAPI = new Usuarios();
+
 
   //? VARIABLES DE LA VENTANA
+  const token = localStorage.getItem('token');
   const [atenciones, setAtenciones] = useState([]);
   const [sucursales, setSucursales] = useState([]);
   const [datosAtenciones, setDatosAtenciones] = useState(['']);
@@ -38,8 +41,7 @@ const TablaAdminAtenciones = () => {
   //! URL
   const apiUrlAtenciones = atencionesAPI.listarDatosAtenciones();
   const apiUrlSucursales = sucursalesAPI.listarSucursales();
-
-  
+  const apiUrlValidacionToken = usuariosAPI.validarToken(token, 'ADMIN');
 
   //! NAVEGACION
   const navigate = useNavigate();
@@ -57,23 +59,25 @@ const TablaAdminAtenciones = () => {
 
   //! COMPROBACIÓN DE TOKEN Y ROL
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const rol = localStorage.getItem("rol");
-
-    if(token !== "" && rol === "1") {
-      
-    } else {
-      navigate("/");
-    }
+    axios
+      .get(apiUrlValidacionToken, head)
+      .then((response) => {
+        if(!response.data) {
+          navigate('/');
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
 
   }, [])
 
-  //! CARGA DE ATENCIONES, ESTADOS
+  //! CARGA DE ATENCIONES
   useEffect(() => {
     fetchData(apiUrlAtenciones, setAtenciones);
-  }, [atenciones, apiUrlAtenciones]);
+  }, []);
 
-  //! CARGA LOS TRABAJADORES
+  //! CARGA LAS SUCURSALES
   useEffect(() => {
     axios
       .get(apiUrlSucursales)
@@ -83,7 +87,7 @@ const TablaAdminAtenciones = () => {
       .catch((error) => {
           console.error("Error fetching data:", error);
       });
-  }, [sucursales, apiUrlSucursales]);
+  }, []);
 
   //! ACTUALIZACIÓN DE DATOS DE BUSQUEDA
   useEffect(() => {
@@ -119,7 +123,7 @@ const TablaAdminAtenciones = () => {
         return matchesSucursal && matchesCadena && matchesValoracion && matchesFecha;
       });
        
-    setDatosAtenciones(filtered);
+    setDatosAtenciones(filtered.slice().reverse());
     
 }, [atenciones, sucursal, cadena, valoracion, fechaInicial, fechaFinal]);
 
@@ -146,7 +150,7 @@ const TablaAdminAtenciones = () => {
   
         const date = new Date(timestamp + timeZoneOffset);
   
-        const fechaFormateada = `${String(date.getHours() - 5).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        const fechaFormateada = `${String(date.getHours() + 6).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
   
         return fechaFormateada;
       

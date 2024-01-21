@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import './pantalla.css';
 import video from '../../assets/video/emapa.mp4';
 import axios from 'axios';
@@ -17,12 +17,23 @@ const Pantalla = () => {
   const [selectedValue] = localStorage.getItem("sucursal");
   const [sucursal, setSucursal] = useState({});
   const [texto, setTexto] = useState('');
+  const [listaVideos, setListaVideos] = useState([]);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const videoRef = useRef(null);
   const synthesis = window.speechSynthesis;
+  const folderPath = "http://localhost:8020/Vid/";
+
+  //!FECHA
+  let fechaActual = new Date();
+  let año = fechaActual.getFullYear();
+  let mes = (fechaActual.getMonth() + 1).toString().padStart(2, '0');
+  let dia = fechaActual.getDate().toString().padStart(2, '0');
+  let fechaFormateada = `${año}-${mes}-${dia}`;
 
   //! URL API
   const apiUrlAtenciones = atencionesAPI.listarAtenciones();
-  const apiUrlTurnosEspera = turnosAPI.turnosPorSucursalEstado(selectedValue, 3);
-  const apiUrlTurnosAtendiendo = turnosAPI.turnosPorSucursalEstado(selectedValue, 4);
+  const apiUrlTurnosEspera = turnosAPI.turnosPorSucursalEstadoDia(selectedValue, 3, fechaFormateada);
+  const apiUrlTurnosAtendiendo = turnosAPI.turnosPorSucursalEstadoDia(selectedValue, 4, fechaFormateada);
   const apiUrlSucursales = sucursalesAPI.sucursalPorID(selectedValue); 
 
   //! CARGA LAS ATENCIONES
@@ -37,7 +48,7 @@ const Pantalla = () => {
       });
   }, [atenciones, apiUrlAtenciones])
 
-  //! CARGA LOS TURNOS SACADOS EN DICHA SUCURSAL Y CON ESTADO EN ESPERA
+  //! CARGA LOS TURNOS SACADOS POR SUCURSAL Y CON ESTADO EN ESPERA
   useEffect(() => {
     axios
       .get(apiUrlTurnosEspera)
@@ -61,7 +72,7 @@ const Pantalla = () => {
       });
   }, [sucursal, selectedValue, apiUrlSucursales])
 
-  //! CARGA LOS TURNOS SACADOS EN DICHA SUCURSAL Y CON ESTADO ATENDIENDO
+  //! CARGA LOS TURNOS SACADOS POR SUCURSAL Y CON ESTADO ATENDIENDO
   useEffect(() => {
     axios
       .get(apiUrlTurnosAtendiendo)
@@ -72,6 +83,62 @@ const Pantalla = () => {
         console.error("Error fetching data:", error);
       });
   }, [turnosAtendiendo, selectedValue, apiUrlTurnosAtendiendo])
+
+  //! CARGA LOS VIDEOS
+  useEffect(() => {
+    fetchVideosFromFolder(folderPath);
+
+    
+    const timeoutId = setTimeout(() => {
+      if(videoRef.current)  {
+        handlePlayButtonClick(videoRef.current);
+      }
+    }, 1000);
+
+   
+    return () => clearTimeout(timeoutId);
+  }, []);
+
+  const fetchVideosFromFolder = async (folderPath) => {
+    try {
+      const videoNames = ['Vid1.mp4', 'Vid2.mp4']; 
+      let videoList = videoNames.map((videoName) => ({
+        name: videoName,
+        url: `${folderPath}${videoName}`,
+      }));
+
+      setListaVideos(videoList);
+    } catch (error) {
+      console.error('Error al obtener la lista de videos', error);
+    }
+  };
+
+  const playNextVideo = () => {
+    if (currentVideoIndex < listaVideos.length - 1) {
+      setCurrentVideoIndex((prevIndex) => prevIndex + 1);
+    } else {
+      setCurrentVideoIndex(0);
+    }
+  };
+
+  const handleVideoEnded = () => {
+    playNextVideo();
+  };
+
+  const handlePlayButtonClick = (element) => {
+    const event = new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+    });
+    element.dispatchEvent(event);
+  };
+
+  useEffect(() => {
+    if (videoRef.current && listaVideos.length > 0) {
+      videoRef.current.load();
+      videoRef.current.play();
+    }
+  }, [currentVideoIndex, listaVideos]);
 
   
   function reproducirSonido(texto) {
@@ -134,9 +201,19 @@ const Pantalla = () => {
           </div>
 
           <div className="Main-derecha">
-              <video autoPlay loop muted>
-                    <source src={video} type="video/mp4" />
-              </video>
+            {listaVideos.length > 0 && (
+              <video
+              ref={videoRef}
+              width="700"
+              height="450"
+              controls
+              onEnded={handleVideoEnded}
+              autoPlay
+              muted
+            >
+              <source src={listaVideos[currentVideoIndex].url} type="video/mp4" />
+            </video>
+            )}
           </div>
       </div>
     </div>

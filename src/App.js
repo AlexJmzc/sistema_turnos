@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './components/login/login';
 import Home from './components/principal/home';
 import Clientes from './components/clientes/clientes';
@@ -17,7 +17,7 @@ import TablaAdminTurnos from './components/admin/tablas/tablaAdminTurnos/tablaAd
 
 function App() {
   return (
-    <BrowserRouter>
+    <Router>
         <Routes>
             <Route path="/" Component={Home} />
             <Route path="/login" Component={Login} />
@@ -34,7 +34,7 @@ function App() {
             <Route path='/tablaAdminConsultas' Component={TablaAdminConsultas}/>
             <Route path='/tablaAdminTurnos' Component={TablaAdminTurnos}/>
         </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
 

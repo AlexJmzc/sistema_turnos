@@ -226,8 +226,7 @@ const Calificacion = () => {
         valoracion: calificacion,
       };
 
-      const urlActualizarCalificacion =
-        calificacionesAPI.actualizarCalificacionPorID();
+      const urlActualizarCalificacion = calificacionesAPI.actualizarCalificacionPorID();
       if (atencion.ID_Atencion !== undefined) {
         axios
           .put(urlActualizarCalificacion, nuevaAtencion, head)

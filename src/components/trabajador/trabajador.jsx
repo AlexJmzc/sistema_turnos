@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import './trabajador.css';
-import { Sucursales, Turnos, Tipos_Consulta, Estados, Atenciones, Calificaciones, head } from '../../api/urls';
+import { Sucursales, Turnos, Tipos_Consulta, Estados, Atenciones, Calificaciones, head, Usuarios } from '../../api/urls';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
 
@@ -12,9 +12,10 @@ const Trabajador = () => {
   const estadosAPI = new Estados();
   const atencionesAPI = new Atenciones();
   const calificacionesAPI = new Calificaciones();
+  const usuariosAPI = new Usuarios();
 
   //? CONSTANTES DE LA VENTANA
-  //const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token');
   const ventanilla = localStorage.getItem('ventanilla') || 0;
   const [turnos, setTurnos] = useState([]);
   const [tipos, setTipos] = useState([]);
@@ -24,32 +25,43 @@ const Trabajador = () => {
   const [turno, setTurno] = useState({});
   const [fechaInicio, setFecha] = useState();
   const [atencionActual, setAtencion] = useState([]);
+  const [turnoActual, setTurnoActual] = useState([]);
+
+  //!FECHA
+  let fechaActual = new Date();
+  let año = fechaActual.getFullYear();
+  let mes = (fechaActual.getMonth() + 1).toString().padStart(2, '0');
+  let dia = fechaActual.getDate().toString().padStart(2, '0');
+  let fechaFormateada = `${año}-${mes}-${dia}`;
 
   //! NAVEGACION
   const navigate = useNavigate();
 
   //! URL API
-  const apiUrlTurnos = turnosAPI.turnosPorSucursalEstado(selectedValue, 3);
   const apiUrlSucursal = sucursalesAPI.sucursalPorID(selectedValue);
   const apiUrlConsultas = consultasAPI.listarTiposConsulta();
   const apiUrlEstados = estadosAPI.listarEstados();
   const apiUrlEliminarAtencion = atencionesAPI.eliminarAtencionPorID();
   const apiUrlEliminarCalificacion = calificacionesAPI.eliminarCalificacionPorID();
+  const apiUrlValidacionToken = usuariosAPI.validarToken(token, 'TRABAJADOR');
+  const apiUrlTurnos = turnosAPI.turnosPorSucursalEstadoDia(selectedValue, 3, fechaFormateada);
   
   //! COMPROBACIÓN DE TOKEN Y ROL
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const rol = localStorage.getItem("rol");
-
-    if(token !== "" && rol === "2") {
-      
-    } else {
-      navigate("/");
-    }
+    axios
+      .get(apiUrlValidacionToken, head)
+      .then((response) => {
+        if(!response.data) {
+          navigate('/');
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
 
   }, [])
 
-  //! CARGA LOS TURNOS SACADOS EN DICHA SUCURSAL Y CON ESTADO EN ESPERA
+  //! CARGA LOS TURNOS SACADOS EN DICHA SUCURSAL EN ESE DIA Y CON ESTADO EN ESPERA
   useEffect(() => {
     axios
       .get(apiUrlTurnos)
@@ -59,7 +71,7 @@ const Trabajador = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, [turnos, selectedValue, apiUrlTurnos])
+  }, [turnos, selectedValue])
 
   //! CARGA LA SUCURSAL ACTUAL
   useEffect(() => {
@@ -128,7 +140,7 @@ const Trabajador = () => {
       var hora = fecha.getHours();
       var minutos = fecha.getMinutes();
 
-      var horaFormateada = hora - 5 + ':' + (minutos < 10 ? '0' : '') + minutos;
+      var horaFormateada = hora + 6  + ':' + (minutos < 10 ? '0' : '') + minutos;
 
       return horaFormateada;
   }
@@ -142,7 +154,10 @@ const Trabajador = () => {
 
     let ml = fecha.getTime();
 
-    const fechaFormateada = `\/Date(${ml})\/`;
+    const horas = 5 * 60 * 60 * 1000;
+
+    const nuevaFecha = ml - horas;
+    const fechaFormateada = `\/Date(${nuevaFecha})\/`;
 
     setFecha(fechaFormateada);
 
@@ -152,7 +167,9 @@ const Trabajador = () => {
 
     let turnoID = item.ID_Turno;
 
-    let atencion = {
+    setTurnoActual(turnoID);
+
+    const atencion = {
       id_Usuario: parseInt(userID),
       id_Turno: parseInt(turnoID),
       ventanilla: ventanilla,
@@ -161,32 +178,35 @@ const Trabajador = () => {
       fecha_Final: fechaFormateada,      
       observacion: "NINGUNA"
     }
+
+
     const urlNuevaAtencion = atencionesAPI.crearNuevaAtencionPOST();
     
     axios
-    .post(urlNuevaAtencion, atencion, head)
-    .then((response) => {
-        setAtencion(response.data.NuevaAtencionResult);
+      .post(urlNuevaAtencion, atencion, head)
+      .then((response) => {
+          setAtencion(response.data.NuevaAtencionResult);
 
-        const nuevaCalificacion = {
-          id_Atencion: response.data.NuevaAtencionResult.ID_Atencion,
-          pregunta_1: 0,
-          pregunta_2: 0,
-          pregunta_3: 0,
-          valoracion: 'NO CALIFICADO'
-        }
-        const urlNuevaCalificacion = calificacionesAPI.crearNuevaCalificacion();
-   
-        axios
-            .post(urlNuevaCalificacion, nuevaCalificacion, head)
-            .then((response) => {
-            })
-            .catch((error) => {
-              console.error("Error fetching data:", error);
-            });
-            })
-    .catch((error) => {
-      console.error("Error fetching data:", error);
+          const nuevaCalificacion = {
+            id_Atencion: response.data.NuevaAtencionResult,
+            pregunta_1: 0,
+            pregunta_2: 0,
+            pregunta_3: 0,
+            valoracion: 'NO CALIFICADO'
+          }
+          const urlNuevaCalificacion = calificacionesAPI.crearNuevaCalificacion();
+    
+          axios
+              .post(urlNuevaCalificacion, nuevaCalificacion, head)
+              .then((response) => {
+                console.log("NUEVA CAL")
+              })
+              .catch((error) => {
+                console.error("Error fetching data:", error);
+              });
+              })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
     });
 
 
@@ -195,10 +215,11 @@ const Trabajador = () => {
       id_Turno: item.ID_Turno,
       estado: 4
     }
+
     axios
       .put(urlActualizarTurno, nuevoTurno, head)
-      .then((response) => {
-        setEstados(response.data);
+      .then(() => {
+        console.log("cambiado estado")
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -219,16 +240,20 @@ const Trabajador = () => {
 
     let ml = fecha.getTime();
 
-    const fechaFormateada = `\/Date(${ml})\/`;
+
+    const horas = 5 * 60 * 60 * 1000;
+
+    const nuevaFecha = ml - horas;
+    const fechaFormateada = `\/Date(${nuevaFecha})\/`;
 
     const estado = 5;
 
     let userID = JSON.parse(localStorage.getItem("user"));
 
-    let turnoID = turno.ID_Turno;
+    let turnoID = turnoActual;
 
     let atencion = {
-      id_Atencion: atencionActual.ID_Atencion,
+      id_Atencion: atencionActual,
       id_Usuario: userID,
       id_Turno: turnoID,
       ventanilla: ventanilla,
@@ -241,7 +266,7 @@ const Trabajador = () => {
     const urlActualizarAtencion = atencionesAPI.actualizarAtencionPorID();
     axios
     .put(urlActualizarAtencion, atencion, head)
-    .then((response) => {
+    .then(() => {
     })
     .catch((error) => {
       console.error("Error fetching data:", error);
@@ -250,14 +275,14 @@ const Trabajador = () => {
     const urlActualizarTurno = turnosAPI.actualizarEstadoTurnoPorID();
 
     const nuevoTurno = {
-      id_Turno: atencion.id_Turno,
+      id_Turno: turnoActual,
       estado: 5
     }
 
     axios
     .put(urlActualizarTurno, nuevoTurno, head)
-    .then((response) => {
-      console.log("Actualizado")
+    .then(() => {
+      document.getElementById('observaciones').value = "";
     })
     .catch((error) => {
       console.error("Error fetching data:", error);
@@ -270,22 +295,37 @@ const Trabajador = () => {
 
   const cancelarAtencion = () => {
     let modal = document.getElementById("myModal");
+
+    const urlActualizarTurno = turnosAPI.actualizarEstadoTurnoPorID();
+
+    const nuevoTurno = {
+      id_Turno: turnoActual,
+      estado: 3
+    }
+
     const id = {
-      id_Atencion: atencionActual.ID_Atencion
+      id_Atencion: atencionActual
     }
 
     axios
     .delete(apiUrlEliminarCalificacion, {data: {id_Atencion: id.id_Atencion}, headers: {
       'Content-Type': 'application/json',
     }})
-    .then((response) => {
+    .then(() => {
+      document.getElementById('observaciones').value = "";
         axios
         .delete(apiUrlEliminarAtencion, {data: {id_Atencion: id.id_Atencion}, headers: {
           'Content-Type': 'application/json',
         }})
-        .then((response) => {
-            console.log(response.data);
-            modal.style.display = "none";
+        .then(() => {
+            axios.put(urlActualizarTurno, nuevoTurno, head)
+            .then(() => {
+              modal.style.display = "none";
+             })
+            .catch((error) => {
+              console.error("Error fetching data:", error);
+             })
+            
         })
         .catch((error) => {
           console.error("Error fetching data:", error);

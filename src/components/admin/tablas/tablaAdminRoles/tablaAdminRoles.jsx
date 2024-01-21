@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Roles, Estados, head } from "../../../../api/urls";
+import { Roles, Estados, head, Usuarios } from "../../../../api/urls";
 import axios from "axios";
 import { useNavigate } from "react-router";
 import "./tablaAdminRoles.css";
@@ -11,8 +11,10 @@ const TablaAdminRoles = () => {
   //? INSTANCIAS DE LAS CLASES DE LAS API
   const rolesAPI = new Roles();
   const estadosAPI = new Estados();
+  const usuariosAPI = new Usuarios();
 
   //? VARIABLES DE LA VENTANA
+  const token = localStorage.getItem('token');
   const [roles, setRoles] = useState([]);
   const [estados, setEstados] = useState([]);
   const [rol, setRol] = useState([]);
@@ -28,6 +30,7 @@ const TablaAdminRoles = () => {
   //! URL
   const apiUrlRoles = rolesAPI.listarRoles();
   const apiUrlEstados = estadosAPI.listarEstados();
+  const apiUrlValidacionToken = usuariosAPI.validarToken(token, 'ADMIN');
 
   //! NAVEGACION
   const navigate = useNavigate();
@@ -44,20 +47,23 @@ const TablaAdminRoles = () => {
 
   //! COMPROBACIÓN DE TOKEN Y ROL
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const rol = localStorage.getItem("rol");
-
-    if (token !== "" && rol === "1") {
-    } else {
-      navigate("/");
-    }
+    axios
+      .get(apiUrlValidacionToken, head)
+      .then((response) => {
+        if(!response.data) {
+          navigate('/');
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
   }, []);
 
   //! CARGA DE ROLES Y ESTADOS
   useEffect(() => {
     fetchData(apiUrlRoles, setRoles);
     fetchData(apiUrlEstados, setEstados);
-  }, [roles, estados]);
+  }, []);
 
   //! ACTUALIZACIÓN DE DATOS DE BUSQUEDA
   useEffect(() => {
@@ -150,7 +156,7 @@ const TablaAdminRoles = () => {
   };
 
   //TODO: ACTUALIZAR ROL
-  const actualizarSucursal = () => {
+  const actualizarRol = () => {
     if (nombre === "") {
       alert("Ingrese un nombre");
     } else {
@@ -164,6 +170,7 @@ const TablaAdminRoles = () => {
         .put(rolesAPI.actualizarRolPorID(), r, head)
         .then(() => {
           cerrarModalEditar();
+          window.location.reload();
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -211,6 +218,7 @@ const TablaAdminRoles = () => {
       .put(rolesAPI.eliminarRolPorID(), datos, head)
       .then(() => {
         cerrarModalDesactivar();
+        window.location.reload();
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -219,6 +227,8 @@ const TablaAdminRoles = () => {
 
   //TODO: ABRIR MODAL NUEVO
   const nuevo = () => {
+    setRol("");
+    setNombre("");
     let modal = document.getElementById("modalNuevo");
     modal.style.display = "block";
   };
@@ -245,6 +255,7 @@ const TablaAdminRoles = () => {
         .then(() => {
           cerrarModalNuevo();
           resetear();
+          window.location.reload();
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -375,9 +386,6 @@ const TablaAdminRoles = () => {
 
       <div id="modalEditar" className="modal">
         <div className="modal-content">
-          <span className="close" onClick={cerrarModalEditar}>
-            &times;
-          </span>
           <div className="modal-body">
             <h1>Actualizar rol</h1>
             <label>Nombre:</label>
@@ -390,33 +398,37 @@ const TablaAdminRoles = () => {
               required
             />
             <br /> <br />
-            <button className="btnAceptar" onClick={actualizarSucursal}>
-              GUARDAR
-            </button>
+            <div className="btnModal">
+              <button className='btnCancelar' onClick={cerrarModalEditar}>
+                CERRAR
+              </button>
+              <button className="btnAceptar" onClick={actualizarRol}>
+                GUARDAR
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <div id="modalDesactivar" className="modal">
         <div className="modal-content">
-          <span className="close" onClick={cerrarModalDesactivar}>
-            &times;
-          </span>
           <div className="modal-body">
             <h1>{mensaje(rol)}</h1>
             <h1>{rol.Nombre}</h1>
-            <button className="btnAceptar" onClick={cambiarEstado}>
-              GUARDAR
-            </button>
+            <div className="btnModal">
+              <button className='btnCancelar' onClick={cerrarModalDesactivar}>
+                CERRAR
+              </button>
+              <button className="btnAceptar" onClick={cambiarEstado}>
+                GUARDAR
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <div id="modalNuevo" className="modal">
         <div className="modal-content">
-          <span className="close" onClick={cerrarModalNuevo}>
-            &times;
-          </span>
           <div className="modal-body">
             <h1>Nuevo rol</h1>
             <label>Nombre:</label>
@@ -429,9 +441,14 @@ const TablaAdminRoles = () => {
               required
             />
             <br /> <br />
-            <button className="btnAceptar" onClick={nuevoRol}>
-              GUARDAR
-            </button>
+            <div className="btnModal">
+              <button className='btnCancelar' onClick={cerrarModalNuevo}>
+                CERRAR
+              </button>
+              <button className="btnAceptar" onClick={nuevoRol}>
+                GUARDAR
+              </button>
+            </div>
           </div>
         </div>
       </div>

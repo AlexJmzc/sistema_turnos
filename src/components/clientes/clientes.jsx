@@ -26,7 +26,7 @@ const Clientes = () => {
   const [sucursal, setSucursal] = useState(null);
 
   //!URL API
-  const apiUrlConsultas = consultas.listarTiposConsulta();
+  const apiUrlConsultas = consultas.tipoConsultaPorEstado(1);
   const apiUrlSucursal = sucursales.sucursalPorID(selectedValue);
 
   //! CARGA DE CONSULTAS
@@ -77,30 +77,37 @@ const Clientes = () => {
     let contador = {};
     const urlGetContador = contadores.contadorPorID(id_Sucursal, id_Consulta);
     const urlNuevoContador = contadores.crearContador();
-    try {
-      const response = await axios.get(urlGetContador);
-      contador = response.data;
 
-      if (contador.ID_Sucursal === 0) {
-        const nuevo = {
-          id_Sucursal: id_Sucursal,
-          id_Tipo_Consulta: id_Consulta,
-          numero: 1
+    await axios.get(urlGetContador)
+      .then(async (response) => {
+        contador = response.data;
+
+        if (contador.ID_Sucursal === 0) {
+          const nuevo = {
+            id_Sucursal: id_Sucursal,
+            id_Tipo_Consulta: id_Consulta,
+            numero: 1
+          }
+    
+          await axios.post(urlNuevoContador, nuevo, head)
+            .then((response) => {
+              contador = response.data.NuevoContadorResult;
+            })
+            .catch((error) => {
+              console.log("Error fetching data: " + error)
+            });
         }
+      })
+      .catch((error) => {
+        console.log("Error fetching data: " + error)
+      })
 
-        const nuevoContadorResponse = await axios.post(urlNuevoContador, nuevo, head);
-        contador = nuevoContadorResponse.data;
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-
-    return contador;
+      return contador;
   }
 
   //TODO: ABRIR MODAL
   const showModal = (e) => {
-    let idConsulta = e.target.id;
+    const idConsulta = e.target.id;
 
     let parrafos = document.getElementsByTagName("p");
 
@@ -125,7 +132,11 @@ const Clientes = () => {
           let fecha = new Date();
 
           const milisegundos = fecha.getTime();
-          const fechaFormateada = `\/Date(${milisegundos})\/`;
+    
+          const horas = 5 * 60 * 60 * 1000;
+
+          const nuevaFecha = milisegundos - horas;
+          const fechaFormateada = `\/Date(${nuevaFecha})\/`;
 
           let ticket = {
             id_Consulta: idConsulta,
@@ -144,6 +155,7 @@ const Clientes = () => {
       .catch((error) => {
         console.error(error);
       });
+    
   };
 
   //TODO: CERRAR MODAL
@@ -181,7 +193,7 @@ const Clientes = () => {
 
     axios
       .post(urlNuevoTurno, nuevoTurno, head)
-      .then((response) => {
+      .then(() => {
         incrementarContador(turno.id_Consulta, turno.id_Sucursal, turno.num);
         closeModal();
         abrirModalTurno();

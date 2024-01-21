@@ -1,15 +1,16 @@
-//const baseURL = "http://localhost:3014/";
-//const baseURL = "http://localhost:4040/";
-const baseURL = "http://192.168.24.62/";
+const baseURL = "http://localhost:4040/";
+//const baseURL = "http://192.168.24.62:8010/";
 
-//const baseServicio = "ServiciosTurnos.svc";
-const baseServicio = "ConsultaTurnos/ServiciosTurnos.svc";
+const baseServicio = "ServiciosTurnos.svc";
 
 const urlTotal = baseURL + baseServicio;
 
 export const head = {
     'Content-Type': 'application/json; charset=utf-8',
-    'Accept': '*/*'
+    'Accept': '*/*',
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache',
+    'Expires': '0'
 }
 
 export class Estados {
@@ -234,9 +235,15 @@ export class Usuarios {
     nuevoUsuario = "/NuevoUsuario";
     actualizarUsuario = "/ActualizarUsuario";
     eliminarUsuario = "/EliminarUsuario";
+    validacionToken = "/Validacion"
 
     listarUsuarios() {
         const url = urlTotal + this.listaUsuarios;
+        return url;
+    }
+
+    validarToken(token, rol) {
+        const url = urlTotal + this.validacionToken + "?token=" + token + "&rol=" + rol;
         return url;
     }
 
@@ -281,6 +288,7 @@ export class Turnos {
     turnoID = "/TurnoID?id=";
     turnosIDSucursal = "/TurnosIDSucursal?id=";
     turnosSucursalEstado = "/TurnosSucursalEstado";
+    turnosSucursalEstadoDia = "/TurnosSucursalEstadoDia";
     nuevoTurno = "/NuevoTurno";
     actualizarTurno = "/ActualizarTurno";
     actualizarEstadoTurno = "/ActualizarEstadoTurno";
@@ -305,6 +313,11 @@ export class Turnos {
         return url;
     }
 
+    turnosPorSucursalEstadoDia(id, estado, fecha) {
+        const url =  urlTotal+ this.turnosSucursalEstadoDia + "?id=" + id + "&estado=" + estado + "&fecha=" + fecha;
+        return url;
+    }
+
     crearNuevoTurno() {
         const url = urlTotal + this.nuevoTurno;
         return url; 
@@ -326,7 +339,7 @@ export class Atenciones {
     listaDatosAtenciones = "/ListaDatosAtenciones";
     atencionIDTurno = "/AtencionIDTurno?id=";
     atencionesEstado = "/AtencionesEstado?estado=";
-    nuevaAtencionPOST = "/NuevaAtencionPOST";
+    nuevaAtencionPOST = "/NuevaAtencion";
     actualizarAtencion = "/ActualizarAtencion";
     eliminarAtencion = "/EliminarAtencion";
 
